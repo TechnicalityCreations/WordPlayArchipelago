@@ -54,19 +54,44 @@ namespace WPArchipelagoMod
             DestroyImmediate(host.GetComponent<Button>());
             DestroyImmediate(host.GetComponent<ButtonTextColouriser>());
             Log("Disabled button components");
-            var input = host.AddComponent<TMP_InputField>();
-            input.textComponent = host.GetComponentInChildren<TextMeshProUGUI>();
-            input.textViewport = input.textComponent.rectTransform;
-            input.textComponent.raycastTarget = false;
-            input.text = input.textComponent.text = "archipelago.gg";
-            input.caretColor = Color.black;
-            input.customCaretColor = true;
-            input.caretWidth = 2;
-            input.onFocusSelectAll = false;
+            var hostField = host.AddComponent<TMP_InputField>();
+            var t = host.GetComponentInChildren<TextMeshProUGUI>();
+            hostField.textComponent = t;
+            hostField.textViewport = t.rectTransform;
+            t.raycastTarget = false;
+            var placeHolder = Instantiate(t, t.transform.parent);
+            var c = placeHolder.color;
+            c.a = 0.75f;
+            placeHolder.color = c;
+            placeHolder.text = "Server";
+            hostField.placeholder = placeHolder;
+            hostField.caretColor = Color.black;
+            hostField.customCaretColor = true;
+            hostField.caretWidth = 2;
+            hostField.onFocusSelectAll = false;
             Log("Added InputField Components");
-            input.enabled = false;
-            input.enabled = true;
-            
+            hostField.enabled = false;
+            hostField.enabled = true;
+            var port = Instantiate(hostField, hostField.transform.parent);
+            port.name = "Port";
+            var portField = port.GetComponent<TMP_InputField>();
+            portField.characterValidation = TMP_InputField.CharacterValidation.Digit;
+            portField.characterLimit = 5;
+            ((TextMeshProUGUI)portField.placeholder).text = "Port";
+            var password = Instantiate(hostField, hostField.transform.parent);
+            password.name = "Password";
+            var passwordField = password.GetComponent<TMP_InputField>();
+            ((TextMeshProUGUI)passwordField.placeholder).text = "Password";
+            var slot = Instantiate(hostField, hostField.transform.parent);
+            slot.name = "Slot";
+            var slotField = slot.GetComponent<TMP_InputField>();
+            ((TextMeshProUGUI)slotField.placeholder).text = "Slot";
+            hostField.text = "archipelago.gg";
+
+            var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
+            Destroy(buttonTemplate);
+            connect.name = "Connect Button";
+            connect.GetComponentInChildren<TextMeshProUGUI>().text = "Connect";
         }
         public void Update()
         {
