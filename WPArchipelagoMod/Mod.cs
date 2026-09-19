@@ -4,9 +4,7 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -30,24 +28,25 @@ namespace WPArchipelagoMod
             Log("Archipelago is loading");
             var h = new Harmony("TechnicalityCreations.WPArchipelagoMod");
             h.PatchAll();
-            
             SceneManager.activeSceneChanged += SceneChanged;
             Log("Archipelago has loaded successfully");
         }
+
         public void SceneChanged(Scene ignoreMe, Scene s)
         {
+            
             Log("Title Screen Loaded");
             var oPanel = GameObject.Find("Other Panel");
-            var aPanel = Instantiate(oPanel, oPanel.transform.parent.parent.parent);
+            var aPanel = Instantiate(oPanel, GameObject.Find("Canvas - Main/Title Screen").transform);
             aPanel.name = "Archipelago Panel";
             aPanel.transform.localPosition = new Vector3(420, -540, 0);
             aPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(550, 558);
-            var pTitle = GameObject.Find("Canvas - Main/Archipelago Panel/Label Area/Label/Title").GetComponent<TextMeshProUGUI>();
+            var pTitle = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Label Area/Label/Title").GetComponent<TextMeshProUGUI>();
             pTitle.text = "Archipelago";
             Log("Created Archipelago Panel");
-            Destroy(GameObject.Find("Canvas - Main/Archipelago Panel/Options/Report an Issue"));
-            Destroy(GameObject.Find("Canvas - Main/Archipelago Panel/Options/Delete Save Button"));
-            var buttonTemplate = GameObject.Find("Canvas - Main/Archipelago Panel/Options/Credits Button");
+            Destroy(GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options/Report an Issue"));
+            Destroy(GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options/Delete Save Button"));
+            var buttonTemplate = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options/Credits Button");
             buttonTemplate.SetActive(true);
             Log("Discovered button templates");
             var host = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
@@ -63,10 +62,14 @@ namespace WPArchipelagoMod
             input.caretColor = Color.black;
             input.customCaretColor = true;
             input.caretWidth = 2;
-            
+            input.onFocusSelectAll = false;
             Log("Added InputField Components");
             input.enabled = false;
             input.enabled = true;
+            
+        }
+        public void Update()
+        {
         }
         public static Texture2D LoadImage(string name)
         {
