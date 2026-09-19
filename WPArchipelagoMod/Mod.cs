@@ -81,6 +81,7 @@ namespace WPArchipelagoMod
             var password = Instantiate(hostField, hostField.transform.parent);
             password.name = "Password";
             var passwordField = password.GetComponent<TMP_InputField>();
+            passwordField.contentType = TMP_InputField.ContentType.Password;
             ((TextMeshProUGUI)passwordField.placeholder).text = "Password";
             var slot = Instantiate(hostField, hostField.transform.parent);
             slot.name = "Slot";
