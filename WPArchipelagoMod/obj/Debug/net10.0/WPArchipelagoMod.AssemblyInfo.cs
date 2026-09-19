@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WPArchipelagoMod")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ed6233feb5a254b24bf4a97a3e5a6b7280667f46")]
 [assembly: System.Reflection.AssemblyProductAttribute("WPArchipelagoMod")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WPArchipelagoMod")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

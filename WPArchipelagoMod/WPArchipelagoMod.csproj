@@ -1,9 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
+  <ItemGroup>
+    <Reference Include="$(HOME)/.config/r2modmanPlus-local/WordPlay/profiles/Default/BepInEx/core/BepInEx*.dll"/>
+    <Reference Include="$(HOME)/.config/r2modmanPlus-local/WordPlay/profiles/Default/BepInEx/core/0Harmony.dll"/>
+    <Reference Include="$(HOME)/.steam/steam/steamapps/common/Word Play/Word Play_Data/Managed/Unity*.dll"/>
+    <Reference Include="$(HOME)/.steam/steam/steamapps/common/Word Play/Word Play_Data/Managed/Assembly*.dll"/>
+    <EmbeddedResource Include="Assets/*.png"/>
+  </ItemGroup>
+  <Target Name="AutoCopyPlugin" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(HOME)/.config/r2modmanPlus-local/WordPlay/profiles/Default/BepInEx/plugins" />
+  </Target>
 </Project>
