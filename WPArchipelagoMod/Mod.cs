@@ -3,8 +3,11 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace WPArchipelagoMod
 {
@@ -23,15 +26,21 @@ namespace WPArchipelagoMod
         }
         void Awake()
         {
-            Log("WPArchipelagoMod is loading");
+            Log("Archipelago is loading");
             var h = new Harmony("TechnicalityCreations.WPArchipelagoMod");
             h.PatchAll();
             SceneManager.activeSceneChanged += SceneChanged;
-            Log("WPArchipelagoMod has loaded successfully");
+            Log("Archipelago has loaded successfully");
         }
-        public void SceneChanged(Scene old, Scene newScene)
+        public void SceneChanged(Scene ignoreMe, Scene s)
         {
-            Log($"Scene Changed form {old.name} to {newScene.name}");
+            Log($"Title Screen Loaded");
+            var oPanel = GameObject.Find("Other Panel");
+            var aPanel = Instantiate(oPanel, oPanel.transform.parent.parent.parent);
+            aPanel.name = "Archipelago Panel";
+            aPanel.transform.localPosition = new Vector3(420, -540, 0);
+            var pTitle = GameObject.Find("Canvas - Main/Archipelago Panel/Label Area/Label/Title").GetComponent<TextMeshProUGUI>();
+            pTitle.text = "Archipelago";
         }
         public static Texture2D LoadImage(string name)
         {
