@@ -28,11 +28,11 @@ namespace WPArchipelagoMod
             Log("Archipelago is loading");
             var h = new Harmony("TechnicalityCreations.WPArchipelagoMod");
             h.PatchAll();
-            SceneManager.activeSceneChanged += SceneChanged;
+            SceneManager.activeSceneChanged += SetUpTitleScreenUI;
             Log("Archipelago has loaded successfully");
         }
 
-        public void SceneChanged(Scene ignoreMe, Scene s)
+        public void SetUpTitleScreenUI(Scene ignoreMe, Scene s)
         {
             
             Log("Title Screen Loaded");
