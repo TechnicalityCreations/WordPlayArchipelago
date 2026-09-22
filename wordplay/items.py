@@ -39,7 +39,7 @@ ITEM_NAME_TO_ID = {
     "Progressive Difficulty": 200,
     # 500+ Filler
     "Refresh": 501,
-    "Play": 501,
+    "Play": 502,
 }
 
 
