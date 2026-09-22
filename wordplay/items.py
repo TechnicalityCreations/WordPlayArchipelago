@@ -63,7 +63,8 @@ def create_item_with_correct_classification(world: WordPlayWorld, name: str) -> 
         classification = ItemClassification.progression
     elif ITEM_NAME_TO_ID[name] > 500:
         classification = ItemClassification.filler
-        
+    elif ITEM_NAME_TO_ID[name] <= 200:
+        classification = ItemClassification.progression
     else:
         classification = DEFAULT_ITEM_CLASSIFICATIONS[name]
 
