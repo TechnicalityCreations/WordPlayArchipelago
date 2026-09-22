@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/william/Documents/Coding/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj": {}
+    "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj": {}
   },
   "projects": {
-    "/home/william/Documents/Coding/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj": {
+    "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/william/Documents/Coding/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
+        "projectUniqueName": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
         "projectName": "WPArchipelagoMod",
-        "projectPath": "/home/william/Documents/Coding/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
+        "projectPath": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
         "packagesPath": "/home/william/.nuget/packages/",
-        "outputPath": "/home/william/Documents/Coding/WordPlayArchipelago/WPArchipelagoMod/obj/",
+        "outputPath": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/william/.nuget/NuGet/NuGet.Config"
@@ -20,11 +20,11 @@
           "netstandard2.1"
         ],
         "sources": {
+          "/usr/lib/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netstandard2.1": {
-            "framework": "netstandard2.1",
             "targetAlias": "netstandard2.1",
             "projectReferences": {}
           }
@@ -39,11 +39,10 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "10.0.400"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "netstandard2.1": {
-          "framework": "netstandard2.1",
           "targetAlias": "netstandard2.1",
           "dependencies": {
             "Archipelago.MultiClient.Net": {
@@ -67,7 +66,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/william/.dotnet/sdk/10.0.400/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.112/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -96,7 +96,6 @@ def create_all_locations(world: WordPlayWorld) -> None:
 
 def create_regular_locations(world: WordPlayWorld) -> None:
     menu = world.get_region("Menu")
-    bottom_right_room = world.get_region("Bottom Right Room")
     locations = []
     for i in range(1,14):
         if i < 10:
@@ -104,6 +103,7 @@ def create_regular_locations(world: WordPlayWorld) -> None:
         if i < 12:
             locations.append(f"NormalRound{i}")
             locations.append(f"HardRound{i}")
+            
         locations.append(f"LegendaryRound{i}")
 
     locations.append(f"EasyFinished")
@@ -117,4 +117,4 @@ def create_regular_locations(world: WordPlayWorld) -> None:
     for i in [10, 15, 20, 25, 30, 50, 75, 100, 125, 150, 175, 200, 225, 250]:
         locations.append(f"{i}PointWord")
 
-    bottom_right_room.add_locations(get_location_names_with_ids(locations), WordPlayLocation)
+    menu.add_locations(get_location_names_with_ids(locations), WordPlayLocation)

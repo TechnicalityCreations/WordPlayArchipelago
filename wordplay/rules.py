@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from rule_builder.options import OptionFilter
 from rule_builder.rules import *
 
-from locations import LOCATION_NAME_TO_ID
+from .locations import LOCATION_NAME_TO_ID
 if TYPE_CHECKING:
     from .world import WordPlayWorld
 
@@ -29,26 +29,7 @@ def set_all_location_rules(world: WordPlayWorld) -> None:
         if "Legendary" in l:
             world.set_rule(loc, legend)
         if "PointWord" in l:
-            world.set_rule(loc, HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "M", "P", "Y", "H"))
-    world.set_rule(world.get_location("10PointWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G"))
-    world.set_rule(world.get_location("EasyRound3"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G"))
-    world.set_rule(world.get_location("EasyRound4"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P"))
-    world.set_rule(world.get_location("EasyRound5"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P", "M"))
-    world.set_rule(world.get_location("EasyRound6"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P", "M", "Y"))
-    world.set_rule(world.get_location("EasyRound7"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P", "M", "Y"))
-    world.set_rule(world.get_location("EasyRound8"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P", "M", "Y"))
-    world.set_rule(world.get_location("EasyRound9"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P", "M", "Y", "H"))
-    world.set_rule(world.get_location("EasyFinished"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "P", "M", "Y", "H"))
-    world.set_rule(world.get_location("15PointWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "M", "P"))
-    world.set_rule(world.get_location("20PointWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "M", "P"))
-    world.set_rule(world.get_location("25PointWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "M", "P", "Y"))
-    world.set_rule(world.get_location("30PointWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G", "M", "P", "Y"))
-    world.set_rule(world.get_location("9LetterWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", "D", "G"))
-    world.set_rule(world.get_location("8LetterWord"), HasAll("A", "E", "I", "L", "N", "O", "R", "S", "T", "U"))
-    world.set_rule(world.get_location("7LetterWord"), HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", count=8))
-    world.set_rule(world.get_location("6LetterWord"), HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", count=7))
-    world.set_rule(world.get_location("5LetterWord"), HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "U", count=5))
-
+            world.set_rule(loc, HasFromList("A","B","C","D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", count=16))
 
 def set_completion_condition(world: WordPlayWorld) -> None:
     world.set_completion_rule(Has("LegendaryFinished"))
