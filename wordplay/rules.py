@@ -27,9 +27,7 @@ def set_all_location_rules(world: WordPlayWorld) -> None:
         if "Hard" in l:
             world.set_rule(loc, hard)
         if "Legendary" in l:
-            world.set_rule(loc, legend)
-        if "PointWord" in l:
-            world.set_rule(loc, HasFromList("A","B","C","D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", count=16))
+            world.set_rule(loc, legend)#&HasFromList("A","B","C","D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", count=16))
 
 def set_completion_condition(world: WordPlayWorld) -> None:
     world.set_completion_rule(Has("LegendaryFinished"))
