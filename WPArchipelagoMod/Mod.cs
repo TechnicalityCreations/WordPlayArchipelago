@@ -108,8 +108,8 @@ namespace WPArchipelagoMod
                     return null;
                 }
                 var buffer = new byte[s.Length];
-                s.Read(buffer);
-                
+                using var b = new BinaryReader(s);
+                b.Read(buffer);
                 var t = new Texture2D(2, 2, TextureFormat.RGBA32, false);
                 ImageConversion.LoadImage(t, buffer);
                 Log($"Loaded image {name}");

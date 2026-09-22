@@ -49,7 +49,7 @@ DEFAULT_ITEM_CLASSIFICATIONS = {
 
 
 class WordPlayItem(Item):
-    game = "APQuest"
+    game = "Word Play"
 
 
 def get_random_filler_item_name(world: WordPlayWorld) -> str:

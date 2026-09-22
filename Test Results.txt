@@ -1,0 +1,332 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting test/webhost/test_cleanup.py _________________
+ImportError while importing test module '/home/william/Documents/Code/Archipelago/test/webhost/test_cleanup.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/webhost/test_cleanup.py:3: in <module>
+    from pony.orm import db_session, commit
+E   ModuleNotFoundError: No module named 'pony'
+__________________ ERROR collecting test/webhost/test_docs.py __________________
+ModuleUpdate.py:147: in update
+    pkg_resources.require(requirement)
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:1067: in require
+    needed = self.resolve(parse_requirements(requirements))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:894: in resolve
+    dist = self._resolve_dist(
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:940: in _resolve_dist
+    raise VersionConflict(dist, req).with_context(dependent_req)
+E   pkg_resources.VersionConflict: (werkzeug 3.1.8 (/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages), Requirement.parse('werkzeug==3.1.6'))
+
+During handling of the above exception, another exception occurred:
+test/webhost/test_docs.py:7: in <module>
+    import WebHost
+WebHost.py:10: in <module>
+    ModuleUpdate.update()
+ModuleUpdate.py:152: in update
+    confirm(f"Requirement {requirement} is not satisfied, press enter to install it")
+ModuleUpdate.py:64: in confirm
+    input(f"\n{msg}")
+venv/lib/python3.12/site-packages/_pytest/capture.py:229: in read
+    raise OSError(
+E   OSError: pytest: reading from stdin while output is captured!  Consider using `-s`.
+------------------------------- Captured stdout --------------------------------
+
+Requirement werkzeug==3.1.6 is not satisfied, press enter to install it
+------------------------------- Captured stderr --------------------------------
+Traceback (most recent call last):
+  File "/home/william/Documents/Code/Archipelago/ModuleUpdate.py", line 147, in update
+    pkg_resources.require(requirement)
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 1067, in require
+    needed = self.resolve(parse_requirements(requirements))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 894, in resolve
+    dist = self._resolve_dist(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 940, in _resolve_dist
+    raise VersionConflict(dist, req).with_context(dependent_req)
+pkg_resources.VersionConflict: (werkzeug 3.1.8 (/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages), Requirement.parse('werkzeug==3.1.6'))
+____________ ERROR collecting test/webhost/test_file_generation.py _____________
+ModuleUpdate.py:147: in update
+    pkg_resources.require(requirement)
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:1067: in require
+    needed = self.resolve(parse_requirements(requirements))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:894: in resolve
+    dist = self._resolve_dist(
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:940: in _resolve_dist
+    raise VersionConflict(dist, req).with_context(dependent_req)
+E   pkg_resources.VersionConflict: (werkzeug 3.1.8 (/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages), Requirement.parse('werkzeug==3.1.6'))
+
+During handling of the above exception, another exception occurred:
+test/webhost/test_file_generation.py:6: in <module>
+    import WebHost
+WebHost.py:10: in <module>
+    ModuleUpdate.update()
+ModuleUpdate.py:152: in update
+    confirm(f"Requirement {requirement} is not satisfied, press enter to install it")
+ModuleUpdate.py:64: in confirm
+    input(f"\n{msg}")
+venv/lib/python3.12/site-packages/_pytest/capture.py:229: in read
+    raise OSError(
+E   OSError: pytest: reading from stdin while output is captured!  Consider using `-s`.
+------------------------------- Captured stdout --------------------------------
+
+Requirement werkzeug==3.1.6 is not satisfied, press enter to install it
+------------------------------- Captured stderr --------------------------------
+Traceback (most recent call last):
+  File "/home/william/Documents/Code/Archipelago/ModuleUpdate.py", line 147, in update
+    pkg_resources.require(requirement)
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 1067, in require
+    needed = self.resolve(parse_requirements(requirements))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 894, in resolve
+    dist = self._resolve_dist(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 940, in _resolve_dist
+    raise VersionConflict(dist, req).with_context(dependent_req)
+pkg_resources.VersionConflict: (werkzeug 3.1.8 (/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages), Requirement.parse('werkzeug==3.1.6'))
+_______________ ERROR collecting test/webhost/test_host_room.py ________________
+ImportError while importing test module '/home/william/Documents/Code/Archipelago/test/webhost/test_host_room.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/webhost/test_host_room.py:7: in <module>
+    from WebHostLib.customserver import set_up_logging, tear_down_logging
+WebHostLib/__init__.py:8: in <module>
+    from flask_caching import Cache
+E   ModuleNotFoundError: No module named 'flask_caching'
+________________ ERROR collecting test/webhost/test_markdown.py ________________
+ImportError while importing test module '/home/william/Documents/Code/Archipelago/test/webhost/test_markdown.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/webhost/test_markdown.py:5: in <module>
+    from mistune import HTMLRenderer, Markdown
+E   ModuleNotFoundError: No module named 'mistune'
+____________ ERROR collecting test/webhost/test_port_allocation.py _____________
+ImportError while importing test module '/home/william/Documents/Code/Archipelago/test/webhost/test_port_allocation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/usr/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/webhost/test_port_allocation.py:6: in <module>
+    from WebHostLib.customserver import RandomPortSocketCreator
+WebHostLib/__init__.py:8: in <module>
+    from flask_caching import Cache
+E   ModuleNotFoundError: No module named 'flask_caching'
+________________ ERROR collecting test/webhost/test_sitemap.py _________________
+ModuleUpdate.py:147: in update
+    pkg_resources.require(requirement)
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:1067: in require
+    needed = self.resolve(parse_requirements(requirements))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:894: in resolve
+    dist = self._resolve_dist(
+venv/lib/python3.12/site-packages/pkg_resources/__init__.py:940: in _resolve_dist
+    raise VersionConflict(dist, req).with_context(dependent_req)
+E   pkg_resources.VersionConflict: (werkzeug 3.1.8 (/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages), Requirement.parse('werkzeug==3.1.6'))
+
+During handling of the above exception, another exception occurred:
+test/webhost/test_sitemap.py:6: in <module>
+    import WebHost
+WebHost.py:10: in <module>
+    ModuleUpdate.update()
+ModuleUpdate.py:152: in update
+    confirm(f"Requirement {requirement} is not satisfied, press enter to install it")
+ModuleUpdate.py:64: in confirm
+    input(f"\n{msg}")
+venv/lib/python3.12/site-packages/_pytest/capture.py:229: in read
+    raise OSError(
+E   OSError: pytest: reading from stdin while output is captured!  Consider using `-s`.
+------------------------------- Captured stdout --------------------------------
+
+Requirement werkzeug==3.1.6 is not satisfied, press enter to install it
+------------------------------- Captured stderr --------------------------------
+Traceback (most recent call last):
+  File "/home/william/Documents/Code/Archipelago/ModuleUpdate.py", line 147, in update
+    pkg_resources.require(requirement)
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 1067, in require
+    needed = self.resolve(parse_requirements(requirements))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 894, in resolve
+    dist = self._resolve_dist(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages/pkg_resources/__init__.py", line 940, in _resolve_dist
+    raise VersionConflict(dist, req).with_context(dependent_req)
+pkg_resources.VersionConflict: (werkzeug 3.1.8 (/home/william/Documents/Code/Archipelago/venv/lib/python3.12/site-packages), Requirement.parse('werkzeug==3.1.6'))
+=================================== FAILURES ===================================
+_ TestBase.test_item_links [Can generate with link replacement] (game='Word Play') _
+
+self = <test.general.test_items.TestBase testMethod=test_item_links>
+
+    def test_item_links(self) -> None:
+        """
+        Tests item link creation by creating a multiworld of 2 worlds for every game and linking their items together.
+        """
+        def setup_link_multiworld(world: Type[World], link_replace: bool) -> None:
+            multiworld = MultiWorld(2)
+            multiworld.game = {1: world.game, 2: world.game}
+            multiworld.player_name = {1: "Linker 1", 2: "Linker 2"}
+            multiworld.set_seed()
+            item_link_group = [{
+                "name": "ItemLinkTest",
+                "item_pool": ["Everything"],
+                "link_replacement": link_replace,
+                "replacement_item": None,
+            }]
+            args = Namespace()
+            for name, option in world.options_dataclass.type_hints.items():
+                setattr(args, name, {1: option.from_any(option.default), 2: option.from_any(option.default)})
+            setattr(args, "item_links",
+                    {1: ItemLinks.from_any(item_link_group), 2: ItemLinks.from_any(item_link_group)})
+            multiworld.set_options(args)
+            multiworld.set_item_links()
+            # groups get added to state during its constructor so this has to be after item links are set
+            multiworld.state = CollectionState(multiworld)
+            gen_steps = ("generate_early", "create_regions", "create_items", "set_rules", "connect_entrances", "generate_basic")
+            for step in gen_steps:
+                call_all(multiworld, step)
+            # link the items together and attempt to fill
+            multiworld.link_items()
+            multiworld._all_state = None
+            call_all(multiworld, "pre_fill")
+            distribute_items_restrictive(multiworld)
+            call_all(multiworld, "post_fill")
+            call_all(multiworld, "finalize_multiworld")
+            self.assertTrue(multiworld.can_beat_game(CollectionState(multiworld)), f"seed = {multiworld.seed}")
+    
+        for game_name, world_type in AutoWorldRegister.testable_worlds.items():
+            with self.subTest("Can generate with link replacement", game=game_name):
+>               setup_link_multiworld(world_type, True)
+
+test/general/test_items.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test/general/test_items.py:129: in setup_link_multiworld
+    self.assertTrue(multiworld.can_beat_game(CollectionState(multiworld)), f"seed = {multiworld.seed}")
+E   AssertionError: False is not true : seed = 16589173338278984940
+_ TestBase.test_item_links [Can generate without link replacement] (game='Word Play') _
+
+self = <test.general.test_items.TestBase testMethod=test_item_links>
+
+    def test_item_links(self) -> None:
+        """
+        Tests item link creation by creating a multiworld of 2 worlds for every game and linking their items together.
+        """
+        def setup_link_multiworld(world: Type[World], link_replace: bool) -> None:
+            multiworld = MultiWorld(2)
+            multiworld.game = {1: world.game, 2: world.game}
+            multiworld.player_name = {1: "Linker 1", 2: "Linker 2"}
+            multiworld.set_seed()
+            item_link_group = [{
+                "name": "ItemLinkTest",
+                "item_pool": ["Everything"],
+                "link_replacement": link_replace,
+                "replacement_item": None,
+            }]
+            args = Namespace()
+            for name, option in world.options_dataclass.type_hints.items():
+                setattr(args, name, {1: option.from_any(option.default), 2: option.from_any(option.default)})
+            setattr(args, "item_links",
+                    {1: ItemLinks.from_any(item_link_group), 2: ItemLinks.from_any(item_link_group)})
+            multiworld.set_options(args)
+            multiworld.set_item_links()
+            # groups get added to state during its constructor so this has to be after item links are set
+            multiworld.state = CollectionState(multiworld)
+            gen_steps = ("generate_early", "create_regions", "create_items", "set_rules", "connect_entrances", "generate_basic")
+            for step in gen_steps:
+                call_all(multiworld, step)
+            # link the items together and attempt to fill
+            multiworld.link_items()
+            multiworld._all_state = None
+            call_all(multiworld, "pre_fill")
+            distribute_items_restrictive(multiworld)
+            call_all(multiworld, "post_fill")
+            call_all(multiworld, "finalize_multiworld")
+            self.assertTrue(multiworld.can_beat_game(CollectionState(multiworld)), f"seed = {multiworld.seed}")
+    
+        for game_name, world_type in AutoWorldRegister.testable_worlds.items():
+            with self.subTest("Can generate with link replacement", game=game_name):
+                setup_link_multiworld(world_type, True)
+            with self.subTest("Can generate without link replacement", game=game_name):
+>               setup_link_multiworld(world_type, False)
+
+test/general/test_items.py:135: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+test/general/test_items.py:129: in setup_link_multiworld
+    self.assertTrue(multiworld.can_beat_game(CollectionState(multiworld)), f"seed = {multiworld.seed}")
+E   AssertionError: False is not true : seed = 89035157706984556052
+_ TestBase.test_default_all_state_can_reach_everything [Completion Condition] (game='Word Play') _
+
+self = <test.general.test_reachability.TestBase testMethod=test_default_all_state_can_reach_everything>
+
+    def test_default_all_state_can_reach_everything(self):
+        """Ensure all state can reach everything and complete the game with the defined options"""
+        for game_name, world_type in AutoWorldRegister.testable_worlds.items():
+            unreachable_regions = self.default_settings_unreachable_regions.get(game_name, set())
+            with self.subTest("Game", game=game_name):
+                multiworld = setup_solo_multiworld(world_type)
+                state = multiworld.get_all_state()
+                for location in multiworld.get_locations():
+                    with self.subTest("Location should be reached", location=location.name):
+                        self.assertTrue(location.can_reach(state), f"{location.name} unreachable")
+    
+                for region in multiworld.get_regions():
+                    if region.name in unreachable_regions:
+                        with self.subTest("Region should be unreachable", region=region.name):
+                            self.assertFalse(region.can_reach(state))
+                    else:
+                        with self.subTest("Region should be reached", region=region.name):
+                            self.assertTrue(region.can_reach(state))
+    
+                with self.subTest("Completion Condition"):
+>                   self.assertTrue(multiworld.can_beat_game(state))
+E                   AssertionError: False is not true
+
+test/general/test_reachability.py:67: AssertionError
+_ TestTwoPlayerMulti{game='Word Play'}.test_two_player_single_game_fills [filling multiworld] (games='Word Play', seed=41875891110514689905) _
+
+self = <test.multiworld.test_multiworlds.TestTwoPlayerMulti{game='Word Play'} testMethod=test_two_player_single_game_fills>
+
+    def test_two_player_single_game_fills(self) -> None:
+        """Tests that a multiworld of two players for each registered game world can generate."""
+        world_type = AutoWorldRegister.testable_worlds[self.game]
+        self.multiworld = setup_multiworld([world_type, world_type], ())
+        for world in self.multiworld.worlds.values():
+            world.options.accessibility.value = Accessibility.option_full
+        self.assertSteps(gen_steps)
+        with self.subTest("filling multiworld", games=world_type.game, seed=self.multiworld.seed):
+            distribute_items_restrictive(self.multiworld)
+            call_all(self.multiworld, "post_fill")
+            call_all(self.multiworld, "finalize_multiworld")
+>           self.assertTrue(self.fulfills_accessibility(), "Collected all locations, but can't beat the game")
+E           AssertionError: False is not true : Collected all locations, but can't beat the game
+
+test/multiworld/test_multiworlds.py:84: AssertionError
+=============================== warnings summary ===============================
+ModuleUpdate.py:78
+  /home/william/Documents/Code/Archipelago/ModuleUpdate.py:78: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources  # noqa: F401
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SUBFAILED[Can generate with link replacement] (game='Word Play') test/general/test_items.py::TestBase::test_item_links - AssertionError: False is not true : seed = 16589173338278984940
+SUBFAILED[Can generate without link replacement] (game='Word Play') test/general/test_items.py::TestBase::test_item_links - AssertionError: False is not true : seed = 89035157706984556052
+SUBFAILED[Completion Condition] (game='Word Play') test/general/test_reachability.py::TestBase::test_default_all_state_can_reach_everything - AssertionError: False is not true
+SUBFAILED[filling multiworld] (games='Word Play', seed=41875891110514689905) test/multiworld/test_multiworlds.py::TestTwoPlayerMulti{game='Word Play'}::test_two_player_single_game_fills - AssertionError: False is not true : Collected all locations, but can't beat...
+ERROR test/webhost/test_cleanup.py
+ERROR test/webhost/test_docs.py - OSError: pytest: reading from stdin while output is captured!  Consider usi...
+ERROR test/webhost/test_file_generation.py - OSError: pytest: reading from stdin while output is captured!  Consider usi...
+ERROR test/webhost/test_host_room.py
+ERROR test/webhost/test_markdown.py
+ERROR test/webhost/test_port_allocation.py
+ERROR test/webhost/test_sitemap.py - OSError: pytest: reading from stdin while output is captured!  Consider usi...
