@@ -40,13 +40,33 @@ namespace WPArchipelagoMod
             SceneManager.activeSceneChanged += SetUpTitleScreenUI;
             Log("Archipelago has loaded successfully");
         }
+        public static SceneType CurrentScene;
         public static void ItemRecieved(Archipelago.MultiClient.Net.Helpers.ReceivedItemsHelper helper)
         {
-            
+            while (helper.Any())
+            {
+                var i = helper.DequeueItem();
+                if(i.ItemName == "Progressive Difficulty" && CurrentScene == SceneType.Title)
+                {
+                    DifficultyManager.UpdateDifficultyButtons();
+                }
+            }
         }
         int attempt = 0;
+        public void SetUpGame()
+        {
+            Log("Game Scene Loaded");
+            CurrentScene = SceneType.Game;
+        }
         public void SetUpTitleScreenUI(Scene ignoreMe, Scene s)
         {
+            if(s.name == "Game")
+            {
+                SetUpGame();
+                return;
+            }
+            var isConnected = Session != null;
+            CurrentScene = SceneType.Title;
             attempt++;
             if(attempt <= 2)
             {
@@ -133,9 +153,20 @@ namespace WPArchipelagoMod
             b.onClick.AddListener(onClick);
             Log("Added Listener");
             var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
-            playButton.interactable = false;
+            playButton.interactable = isConnected;
+            if (isConnected)
+            {
+                hostField.text = Server;
+                portField.text = PortNumber;
+                passwordField.text = Password;
+                slotField.text = SlotName;
+                connect.GetComponentInChildren<TextMeshProUGUI>().text = "Success";
+                b.interactable = false;
+                DifficultyManager.InitialiseDifficultyOptions();
+            }
             Log("Connected to Connect Button");
         }
+        static string Server, PortNumber, Password, SlotName;
         public static void ConnectToMultiworld()
         {
             Log("Connecting");
@@ -145,12 +176,12 @@ namespace WPArchipelagoMod
             var bText = button.GetComponentInChildren<TextMeshProUGUI>();
             bText.text = "Connecting";
             b.enabled = false;
-            var server = GameObject.Find(apPanelPath + "Host").GetComponent<TMP_InputField>().text;
-            var port = GameObject.Find(apPanelPath + "Port").GetComponent<TMP_InputField>().text;
-            var password = GameObject.Find(apPanelPath + "Password").GetComponent<TMP_InputField>().text;
-            var slot = GameObject.Find(apPanelPath + "Slot").GetComponent<TMP_InputField>().text;
-            Session = ArchipelagoSessionFactory.CreateSession(server + ":" + port);
-            var result = Session.TryConnectAndLogin("Word Play", slot, ItemsHandlingFlags.IncludeOwnItems, password: password);
+            Server = GameObject.Find(apPanelPath + "Host").GetComponent<TMP_InputField>().text;
+            PortNumber = GameObject.Find(apPanelPath + "Port").GetComponent<TMP_InputField>().text;
+            Password = GameObject.Find(apPanelPath + "Password").GetComponent<TMP_InputField>().text;
+            SlotName = GameObject.Find(apPanelPath + "Slot").GetComponent<TMP_InputField>().text;
+            Session = ArchipelagoSessionFactory.CreateSession(Server + ":" + PortNumber);
+            var result = Session.TryConnectAndLogin("Word Play", SlotName, ItemsHandlingFlags.IncludeOwnItems, password: Password);
             b.enabled = true;
             if (result.Successful)
             {
@@ -158,6 +189,7 @@ namespace WPArchipelagoMod
                 Log("Successfully Connected");
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
+                b.interactable = false;
                 Session.Items.ItemReceived += ItemRecieved;
                 DifficultyManager.InitialiseDifficultyOptions();
             }
@@ -165,6 +197,7 @@ namespace WPArchipelagoMod
             {
                 bText.text = "Couldn't Connect";
                 Log("Failure to Connect");
+                Session = null;
             }
         }
     
@@ -187,5 +220,10 @@ namespace WPArchipelagoMod
                 return t;
             }
         }
+    }
+    public enum SceneType
+    {
+        Title,
+        Game
     }
 }
