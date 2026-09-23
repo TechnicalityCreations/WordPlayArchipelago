@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "FJVG22Ct3P8=",
+  "dgSpecHash": "zgEFXCqrOgQ=",
   "success": true,
-  "projectFilePath": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
+  "projectFilePath": "/home/avery/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
   "expectedPackageFiles": [
-    "/home/william/.nuget/packages/archipelago.multiclient.net/6.7.1/archipelago.multiclient.net.6.7.1.nupkg.sha512"
+    "/home/avery/.nuget/packages/archipelago.multiclient.net/6.7.1/archipelago.multiclient.net.6.7.1.nupkg.sha512"
   ],
   "logs": []
 }

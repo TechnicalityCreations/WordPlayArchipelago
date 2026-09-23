@@ -62,19 +62,19 @@
     ]
   },
   "packageFolders": {
-    "/home/william/.nuget/packages/": {}
+    "/home/avery/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
+      "projectUniqueName": "/home/avery/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
       "projectName": "WPArchipelagoMod",
-      "projectPath": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
-      "packagesPath": "/home/william/.nuget/packages/",
-      "outputPath": "/home/william/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/obj/",
+      "projectPath": "/home/avery/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/WPArchipelagoMod.csproj",
+      "packagesPath": "/home/avery/.nuget/packages/",
+      "outputPath": "/home/avery/Documents/Code/WordPlayArchipelago/WPArchipelagoMod/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/william/.nuget/NuGet/NuGet.Config"
+        "/home/avery/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.1"

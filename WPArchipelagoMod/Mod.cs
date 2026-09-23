@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -7,17 +8,25 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
+using Archipelago.MultiClient.Net;
+using Archipelago.MultiClient.Net.Enums;
+using UnityEngine.Events;
+using Unity.VisualScripting;
 namespace WPArchipelagoMod
 {
     [BepInPlugin("TechnicalityCreations.WPArchipelagoMod", "Archipelago", "0.1.0")]
     public class Mod : BaseUnityPlugin
     {
+        internal static ArchipelagoSession Session;
         static Mod inst;
         public static void Log(object s, LogLevel level = LogLevel.Message)
         {
             if(inst != null && inst.Logger != null)
                 inst.Logger.Log(level, s);
+            else
+            {
+                BepInEx.Logging.Logger.CreateLogSource("WordPlay").Log(level, s);
+            }
         }
         public Mod()
         {
@@ -31,11 +40,21 @@ namespace WPArchipelagoMod
             SceneManager.activeSceneChanged += SetUpTitleScreenUI;
             Log("Archipelago has loaded successfully");
         }
-
-        public void SetUpTitleScreenUI(Scene ignoreMe, Scene s)
+        public static void ItemRecieved(Archipelago.MultiClient.Net.Helpers.ReceivedItemsHelper helper)
         {
             
+        }
+        int attempt = 0;
+        public void SetUpTitleScreenUI(Scene ignoreMe, Scene s)
+        {
+            attempt++;
+            if(attempt <= 2)
+            {
+                Log("Blocked SetUpTitleScreenUI");
+                return;
+            }
             Log("Title Screen Loaded");
+
             var oPanel = GameObject.Find("Other Panel");
             var aPanel = Instantiate(oPanel, GameObject.Find("Canvas - Main/Title Screen").transform);
             aPanel.name = "Archipelago Panel";
@@ -88,15 +107,67 @@ namespace WPArchipelagoMod
             var slotField = slot.GetComponent<TMP_InputField>();
             ((TextMeshProUGUI)slotField.placeholder).text = "Slot";
             hostField.text = "archipelago.gg";
+            Log("Loaded UI");
 
             var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
             Destroy(buttonTemplate);
             connect.name = "Connect Button";
             connect.GetComponentInChildren<TextMeshProUGUI>().text = "Connect";
+            Log("Loaded UI");
+            //await Task.Delay(500);
+            if(connect == null)
+            {
+                Log("Connect is null");
+                return;
+            }
+            var b = connect.GetComponent<Button>();
+            Log("Gotten b");
+            if(b == null)
+            {
+                Log("b is null", LogLevel.Error);
+                return;
+            }
+            if(b.onClick == null) Log("b.onClick is null", LogLevel.Error);
+            var onClick = new UnityAction(ConnectToMultiworld);
+            Log("Created Unity Action");
+            b.onClick.AddListener(onClick);
+            Log("Added Listener");
+            var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
+            playButton.interactable = false;
+            Log("Connected to Connect Button");
         }
-        public void Update()
+        public static void ConnectToMultiworld()
         {
+            Log("Connecting");
+            var apPanelPath = "Canvas - Main/Title Screen/Archipelago Panel/Options/";
+            var button = GameObject.Find(apPanelPath + "Connect Button");
+            var b = button.GetComponent<Button>();
+            var bText = button.GetComponentInChildren<TextMeshProUGUI>();
+            bText.text = "Connecting";
+            b.enabled = false;
+            var server = GameObject.Find(apPanelPath + "Host").GetComponent<TMP_InputField>().text;
+            var port = GameObject.Find(apPanelPath + "Port").GetComponent<TMP_InputField>().text;
+            var password = GameObject.Find(apPanelPath + "Password").GetComponent<TMP_InputField>().text;
+            var slot = GameObject.Find(apPanelPath + "Slot").GetComponent<TMP_InputField>().text;
+            Session = ArchipelagoSessionFactory.CreateSession(server + ":" + port);
+            var result = Session.TryConnectAndLogin("Word Play", slot, ItemsHandlingFlags.IncludeOwnItems, password: password);
+            b.enabled = true;
+            if (result.Successful)
+            {
+                bText.text = "Success";
+                Log("Successfully Connected");
+                var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
+                playButton.interactable = true;
+                Session.Items.ItemReceived += ItemRecieved;
+                DifficultyManager.InitialiseDifficultyOptions();
+            }
+            else
+            {
+                bText.text = "Couldn't Connect";
+                Log("Failure to Connect");
+            }
         }
+    
         public static Texture2D LoadImage(string name)
         {
             var a = Assembly.GetExecutingAssembly();
