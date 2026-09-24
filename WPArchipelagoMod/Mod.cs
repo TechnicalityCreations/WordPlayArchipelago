@@ -12,6 +12,10 @@ using Archipelago.MultiClient.Net;
 using Archipelago.MultiClient.Net.Enums;
 using UnityEngine.Events;
 using Unity.VisualScripting;
+using System.Collections.Generic;
+using Archipelago.MultiClient.Net.MessageLog.Messages;
+using System;
+using System.Linq;
 namespace WPArchipelagoMod
 {
     [BepInPlugin("TechnicalityCreations.WPArchipelagoMod", "Archipelago", "0.1.0")]
@@ -36,7 +40,8 @@ namespace WPArchipelagoMod
         {
             Log("Archipelago is loading");
             var h = new Harmony("TechnicalityCreations.WPArchipelagoMod");
-            h.PatchAll();
+            TileManager.Patch(h);
+            WordSubmitManager.Patch(h);
             SceneManager.activeSceneChanged += SetUpTitleScreenUI;
             Log("Archipelago has loaded successfully");
         }
@@ -46,9 +51,19 @@ namespace WPArchipelagoMod
             while (helper.Any())
             {
                 var i = helper.DequeueItem();
+                Log("Item Recieved: " + i.ItemName);
                 if(i.ItemName == "Progressive Difficulty" && CurrentScene == SceneType.Title)
                 {
                     DifficultyManager.UpdateDifficultyButtons();
+                }
+                if(i.ItemName.Length == 1)
+                {
+                    if(CurrentScene == SceneType.Game)
+                    {
+                        TileManager.RecieveLetterItem(i.ItemName);
+                    }
+                    else
+                        LetterBagQueue.Add(i.ItemName);
                 }
             }
         }
@@ -57,6 +72,11 @@ namespace WPArchipelagoMod
         {
             Log("Game Scene Loaded");
             CurrentScene = SceneType.Game;
+            var queue = LetterBagQueue.ToArray();
+            foreach(var l in queue)
+            {
+                TileManager.RecieveLetterItem(l);
+            }
         }
         public void SetUpTitleScreenUI(Scene ignoreMe, Scene s)
         {
@@ -74,7 +94,7 @@ namespace WPArchipelagoMod
                 return;
             }
             Log("Title Screen Loaded");
-
+            if(isConnected) return;
             var oPanel = GameObject.Find("Other Panel");
             var aPanel = Instantiate(oPanel, GameObject.Find("Canvas - Main/Title Screen").transform);
             aPanel.name = "Archipelago Panel";
@@ -153,6 +173,9 @@ namespace WPArchipelagoMod
             b.onClick.AddListener(onClick);
             Log("Added Listener");
             var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
+            var resumeButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button").GetComponent<Button>();
+            var resumeBubble = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button/Resume Info/Bubble");
+
             playButton.interactable = isConnected;
             if (isConnected)
             {
@@ -164,14 +187,57 @@ namespace WPArchipelagoMod
                 b.interactable = false;
                 DifficultyManager.InitialiseDifficultyOptions();
             }
+            else
+            {
+                resumeButton.interactable = false;
+                resumeBubble.SetActive(false);
+            }
             Log("Connected to Connect Button");
         }
         static string Server, PortNumber, Password, SlotName;
+        internal static async void CompleteCheck(string name)
+        {
+            Log($"Completing Check "+name);
+            var id = Session.Locations.GetLocationIdFromName("Word Play", name);
+            Log($"Check ID is "+id);
+            await Session.Locations.CompleteLocationChecksAsync(id);
+            Log($"Completed Check "+name);
+        }
+        static TextMeshProUGUI Console;
+        public static void TurnAPPanelIntoConsole()
+        {
+            Log("Turning AP Panel into Console");
+            var options = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options");
+            Destroy(options.GetComponent<VerticalLayoutGroup>());
+            var text = options.AddComponent<TextMeshProUGUI>();
+            text.font = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button").GetComponentInChildren<TextMeshProUGUI>().font;
+            text.fontSize = 18;
+            text.enableWordWrapping = false;
+            Log("Added Text Component to Console");
+            for(int i = 0; i <options.transform.childCount; i++)
+            {
+                options.transform.GetChild(i).gameObject.SetActive(false);
+            }
+            var canvas = Instantiate(GameObject.Find("Canvas - Main"));
+            for(int i = 0; i <canvas.transform.childCount; i++)
+            {
+                canvas.transform.GetChild(i).gameObject.SetActive(false);
+            }
+            var panel = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel");
+            Log("Finished Creating Console");
+            panel.transform.SetParent(canvas.transform, true);
+            DontDestroyOnLoad(canvas);
+            Log("Made Console Permanent");
+            Console = text;
+        }
         public static void ConnectToMultiworld()
         {
             Log("Connecting");
             var apPanelPath = "Canvas - Main/Title Screen/Archipelago Panel/Options/";
             var button = GameObject.Find(apPanelPath + "Connect Button");
+            var resumeButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button").GetComponent<Button>();
+            var resumeBubble = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button/Resume Info/Bubble");
+            var resumeText = resumeBubble.GetComponentInChildren<TextMeshProUGUI>();
             var b = button.GetComponent<Button>();
             var bText = button.GetComponentInChildren<TextMeshProUGUI>();
             bText.text = "Connecting";
@@ -181,17 +247,20 @@ namespace WPArchipelagoMod
             Password = GameObject.Find(apPanelPath + "Password").GetComponent<TMP_InputField>().text;
             SlotName = GameObject.Find(apPanelPath + "Slot").GetComponent<TMP_InputField>().text;
             Session = ArchipelagoSessionFactory.CreateSession(Server + ":" + PortNumber);
-            var result = Session.TryConnectAndLogin("Word Play", SlotName, ItemsHandlingFlags.IncludeOwnItems, password: Password);
+            var result = Session.TryConnectAndLogin("Word Play", SlotName, ItemsHandlingFlags.AllItems, password: Password);
             b.enabled = true;
             if (result.Successful)
             {
-                bText.text = "Success";
-                Log("Successfully Connected");
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
                 b.interactable = false;
                 Session.Items.ItemReceived += ItemRecieved;
-                DifficultyManager.InitialiseDifficultyOptions();
+                LogRecievedItems();
+                SaveFilePath.SetValue(MetaGameSave.Instance, Path.Combine(Application.persistentDataPath, $"archipelago{PortNumber}{SlotName}savedata.json"));
+                MetaGameSave.Instance.LoadData();
+                resumeButton.interactable = MetaGameRules.Instance.hasInProgressData;
+                TurnAPPanelIntoConsole();
+                Session.MessageLog.OnMessageReceived += AddMessageToConsole;
             }
             else
             {
@@ -200,24 +269,32 @@ namespace WPArchipelagoMod
                 Session = null;
             }
         }
-    
-        public static Texture2D LoadImage(string name)
+        static List<string> ConsoleLines = new List<string>();
+        public static void AddMessageToConsole(LogMessage message)
         {
-            var a = Assembly.GetExecutingAssembly();
-            using(Stream s = a.GetManifestResourceStream("WPArchipelagoMod.Assets." +name + ".png"))
+            var s = "";
+            foreach(var part in message.Parts)
             {
-                if(s == null)
-                {
-                    Log($"Couldnt find resource {name}", LogLevel.Error);
-                    return null;
-                }
-                var buffer = new byte[s.Length];
-                using var b = new BinaryReader(s);
-                b.Read(buffer);
-                var t = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                ImageConversion.LoadImage(t, buffer);
-                Log($"Loaded image {name}");
-                return t;
+                var c = part.Color;
+                var colourHex = $"#{BitConverter.ToString(new byte[]{c.R, c.G, c.B})}".Replace("-", "");
+                s += $"<color={colourHex}>{part.Text}</color> ";
+            }
+            ConsoleLines.AddItem(s);
+            if(ConsoleLines.Count() > 20) ConsoleLines.RemoveAt(0);
+            Console.text += "\n" + s;//string.Join('\n', ConsoleLines);
+            Log(s);
+            Log(Console.text);
+        }
+        static FieldInfo SaveFilePath = AccessTools.Field(typeof(MetaGameSave), "saveFilePath");
+        static List<string> LetterBagQueue = new List<string>();
+        static async void LogRecievedItems()
+        {
+            await Task.Delay(200);
+            DifficultyManager.InitialiseDifficultyOptions();
+            Log("Current Inventory:", LogLevel.Info);
+            foreach(var item in Session.Items.AllItemsReceived)
+            {
+                Log(item.ItemName, LogLevel.Info);
             }
         }
     }
