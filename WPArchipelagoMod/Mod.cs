@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using Archipelago.MultiClient.Net.MessageLog.Messages;
 using System;
 using System.Linq;
+using Archipelago.MultiClient.Net.Helpers;
+using Archipelago.MultiClient.Net.Packets;
 namespace WPArchipelagoMod
 {
     [BepInPlugin("TechnicalityCreations.WPArchipelagoMod", "Archipelago", "0.1.0")]
@@ -41,7 +43,7 @@ namespace WPArchipelagoMod
             Log("Archipelago is loading");
             var h = new Harmony("TechnicalityCreations.WPArchipelagoMod");
             TileManager.Patch(h);
-            WordSubmitManager.Patch(h);
+            GameplayManager.Patch(h);
             SceneManager.activeSceneChanged += SetUpTitleScreenUI;
             Log("Archipelago has loaded successfully");
         }
@@ -55,6 +57,11 @@ namespace WPArchipelagoMod
                 if(i.ItemName == "Progressive Difficulty" && CurrentScene == SceneType.Title)
                 {
                     DifficultyManager.UpdateDifficultyButtons();
+                }
+                if(CurrentScene == SceneType.Game)
+                {
+                    if(i.ItemName == "Play") GameplayManager.AddPlay();
+                    if(i.ItemName == "Refresh") GameplayManager.AddRefresh();
                 }
                 if(i.ItemName.Length == 1)
                 {
@@ -94,7 +101,11 @@ namespace WPArchipelagoMod
                 return;
             }
             Log("Title Screen Loaded");
-            if(isConnected) return;
+            if (isConnected)
+            {
+                DifficultyManager.InitialiseDifficultyOptions();
+                return;
+            }
             var oPanel = GameObject.Find("Other Panel");
             var aPanel = Instantiate(oPanel, GameObject.Find("Canvas - Main/Title Screen").transform);
             aPanel.name = "Archipelago Panel";
@@ -176,22 +187,9 @@ namespace WPArchipelagoMod
             var resumeButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button").GetComponent<Button>();
             var resumeBubble = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button/Resume Info/Bubble");
 
-            playButton.interactable = isConnected;
-            if (isConnected)
-            {
-                hostField.text = Server;
-                portField.text = PortNumber;
-                passwordField.text = Password;
-                slotField.text = SlotName;
-                connect.GetComponentInChildren<TextMeshProUGUI>().text = "Success";
-                b.interactable = false;
-                DifficultyManager.InitialiseDifficultyOptions();
-            }
-            else
-            {
-                resumeButton.interactable = false;
-                resumeBubble.SetActive(false);
-            }
+            playButton.interactable = false;
+            resumeButton.interactable = false;
+            resumeBubble.SetActive(false);
             Log("Connected to Connect Button");
         }
         static string Server, PortNumber, Password, SlotName;
@@ -230,6 +228,7 @@ namespace WPArchipelagoMod
             Log("Made Console Permanent");
             Console = text;
         }
+        public static Dictionary<string, object> SlotData;
         public static void ConnectToMultiworld()
         {
             Log("Connecting");
@@ -247,14 +246,17 @@ namespace WPArchipelagoMod
             Password = GameObject.Find(apPanelPath + "Password").GetComponent<TMP_InputField>().text;
             SlotName = GameObject.Find(apPanelPath + "Slot").GetComponent<TMP_InputField>().text;
             Session = ArchipelagoSessionFactory.CreateSession(Server + ":" + PortNumber);
+            Session.Items.ItemReceived += ItemRecieved;
             var result = Session.TryConnectAndLogin("Word Play", SlotName, ItemsHandlingFlags.AllItems, password: Password);
+            
             b.enabled = true;
             if (result.Successful)
             {
+                SlotData = (result as LoginSuccessful).SlotData;
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
                 b.interactable = false;
-                Session.Items.ItemReceived += ItemRecieved;
+
                 LogRecievedItems();
                 SaveFilePath.SetValue(MetaGameSave.Instance, Path.Combine(Application.persistentDataPath, $"archipelago{PortNumber}{SlotName}savedata.json"));
                 MetaGameSave.Instance.LoadData();
@@ -290,7 +292,6 @@ namespace WPArchipelagoMod
         static async void LogRecievedItems()
         {
             await Task.Delay(200);
-            DifficultyManager.InitialiseDifficultyOptions();
             Log("Current Inventory:", LogLevel.Info);
             foreach(var item in Session.Items.AllItemsReceived)
             {
