@@ -34,7 +34,12 @@ namespace WPArchipelagoMod
             {"W", 2},
             {"X", 1},
             {"Y", 1},
-            {"Z", 1}
+            {"Z", 1},
+            {"*", 2},
+            {"1", 2},
+            {"3", 2},
+            {"!", 2},
+            {"+", 1}
         };
         public static void Patch(Harmony h)
         {

@@ -48,6 +48,8 @@ namespace WPArchipelagoMod
             Log("Archipelago has loaded successfully");
         }
         public static SceneType CurrentScene;
+        public static bool Has(string name) => Count(name) > 0;
+        public static int Count(string name) => Session.Items.AllItemsReceived.Where((i)=>i.ItemName == name).Count();
         public static void ItemRecieved(Archipelago.MultiClient.Net.Helpers.ReceivedItemsHelper helper)
         {
             while (helper.Any())
@@ -63,11 +65,11 @@ namespace WPArchipelagoMod
                     if(i.ItemName == "Play") GameplayManager.AddPlay();
                     if(i.ItemName == "Refresh") GameplayManager.AddRefresh();
                 }
-                if(i.ItemName.Length == 1)
+                if(i.ItemName.Replace("ERS", "3").Replace("ING", "1").Length == 1)
                 {
                     if(CurrentScene == SceneType.Game)
                     {
-                        TileManager.RecieveLetterItem(i.ItemName);
+                        TileManager.RecieveLetterItem(i.ItemName.Replace("ERS", "3").Replace("ING", "1"));
                     }
                     else
                         LetterBagQueue.Add(i.ItemName);
@@ -160,6 +162,10 @@ namespace WPArchipelagoMod
             hostField.text = "archipelago.gg";
             Log("Loaded UI");
 
+            // Debug Connection
+            slotField.text = "WordPlayTest";
+            portField.text = "64907";
+
             var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
             Destroy(buttonTemplate);
             connect.name = "Connect Button";
@@ -229,7 +235,7 @@ namespace WPArchipelagoMod
             Console = text;
         }
         public static Dictionary<string, object> SlotData;
-        public static void ConnectToMultiworld()
+        public static async void ConnectToMultiworld()
         {
             Log("Connecting");
             var apPanelPath = "Canvas - Main/Title Screen/Archipelago Panel/Options/";
@@ -247,8 +253,16 @@ namespace WPArchipelagoMod
             SlotName = GameObject.Find(apPanelPath + "Slot").GetComponent<TMP_InputField>().text;
             Session = ArchipelagoSessionFactory.CreateSession(Server + ":" + PortNumber);
             Session.Items.ItemReceived += ItemRecieved;
-            var result = Session.TryConnectAndLogin("Word Play", SlotName, ItemsHandlingFlags.AllItems, password: Password);
-            
+            try
+            {
+                var connectResult = await Session.ConnectAsync();
+            }
+            catch (Exception e)
+            {
+                Log(e);
+                goto Failure;
+            }
+            var result = await Session.LoginAsync("Word Play", SlotName, ItemsHandlingFlags.AllItems, password: Password);
             b.enabled = true;
             if (result.Successful)
             {
@@ -256,20 +270,20 @@ namespace WPArchipelagoMod
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
                 b.interactable = false;
-
+                DifficultyManager.InitialiseDifficultyOptions();
                 LogRecievedItems();
                 SaveFilePath.SetValue(MetaGameSave.Instance, Path.Combine(Application.persistentDataPath, $"archipelago{PortNumber}{SlotName}savedata.json"));
                 MetaGameSave.Instance.LoadData();
                 resumeButton.interactable = MetaGameRules.Instance.hasInProgressData;
                 TurnAPPanelIntoConsole();
                 Session.MessageLog.OnMessageReceived += AddMessageToConsole;
+                return;
             }
-            else
-            {
-                bText.text = "Couldn't Connect";
-                Log("Failure to Connect");
-                Session = null;
-            }
+        Failure:
+            bText.text = "Couldn't Connect";
+            b.interactable = true;
+            Log("Failure to Connect");
+            Session = null;
         }
         static List<string> ConsoleLines = new List<string>();
         public static void AddMessageToConsole(LogMessage message)
@@ -297,6 +311,8 @@ namespace WPArchipelagoMod
             {
                 Log(item.ItemName, LogLevel.Info);
             }
+            Log(Session.Items.Any());
+            Log(Session.Items.DequeueItem());
         }
     }
     public enum SceneType
