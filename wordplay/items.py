@@ -143,7 +143,7 @@ def create_all_items(world: WordPlayWorld) -> None:
     startingBonus = startingBonuses[world.random.randint(0, len(startingBonuses) - 1)]
     items = ITEM_NAME_TO_ID.keys()
     cap = 200
-    if not world.options.Randomise_Bonuses:
+    if not world.options.randomise_bonuses:
         cap = 50
     progItems = [i for i in items if ITEM_NAME_TO_ID[i] < cap]
     progPool = []

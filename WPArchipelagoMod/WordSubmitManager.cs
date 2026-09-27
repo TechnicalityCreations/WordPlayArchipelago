@@ -49,10 +49,48 @@ namespace WPArchipelagoMod
                 Mod.CompleteCheck(AchievementIDToLocation[(string)__args[0]]);
             }
         }
+        public static char[] PolyglotTiles = new char[]
+        {
+            'Γ',
+            'Δ',
+            'Θ',
+            'Λ',
+            'Ξ',
+            'Π',
+            'Σ',
+            'Φ',
+            'Ψ',
+            'Ω',
+            'Б',
+            'Д',
+            'Ж',
+            'Ꙉ',
+            'Ѡ',
+            'Ш',
+            'Ѫ',
+            'Ѯ',
+            'Ꙋ',
+            'ق',
+            'ج',
+            'ل',
+            'م',
+            '平',
+            '凹',
+            '下',
+            '意',
+        };
         public static void AddTrap(string Trap)
         {
             switch (Trap)
             {
+                case "Polyglot Trap":
+                    for(int i = 0; i < 15; i++)
+                    {
+                        var m = GameObject.Find("Managers/Letter Bag").GetComponent<LetterBagManager>();
+                        var l = m.LettersInPlay[i];
+                        l = PolyglotTiles[Random.Range(0, PolyglotTiles.Length-1)] + l.Remove(0, 1);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -83,7 +121,7 @@ namespace WPArchipelagoMod
         }
         public static void EditUpgradesAvailable(BonusStore __instance)
         {
-            if(!(bool)Mod.SlotData["Randomise_Bonuses"]) return;
+            if(!(bool)Mod.SlotData["randomise_Bonuses"]) return;
             MetaGameRules.Instance.levelCompletion[1] = true;
             var list = __instance.everyBonus;
             __instance.everyBonus.Clear();

@@ -165,7 +165,7 @@ namespace WPArchipelagoMod
 
             // Debug Connection
             slotField.text = "WordPlayTest";
-            portField.text = "50205";
+            portField.text = "38623";
 
             var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
             Destroy(buttonTemplate);
@@ -228,13 +228,36 @@ namespace WPArchipelagoMod
             {
                 canvas.transform.GetChild(i).gameObject.SetActive(false);
             }
+            var slot = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options/Slot");
+            slot.SetActive(true);
+            var stext = slot.GetComponent<TMP_InputField>();
+            stext.placeholder.gameObject.SetActive(false);
+            stext.placeholder = null;
+            stext.text = "";
+            CommandField = stext;
+            slot.name = "Text Input";
+            var connect = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options/Connect Button");
+            connect.SetActive(true);
+            var button = connect.GetComponent<Button>();
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(new UnityAction(SendMessage));
+            button.interactable = true;
+            button.GetComponentInChildren<TextMeshProUGUI>().text = "Send Message/Command";
             var panel = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel");
+            stext.transform.SetParent(panel.transform, true);
+            button.transform.SetParent(panel.transform, true);
             Log("Finished Creating Console");
             panel.GetComponent<Image>().raycastTarget = text.raycastTarget = false;
             panel.transform.SetParent(canvas.transform, true);
             DontDestroyOnLoad(canvas);
             Log("Made Console Permanent");
             Console = text;
+        }
+        static TMP_InputField CommandField;
+        public static void SendMessage()
+        {
+            Session.Say(CommandField.text);
+            CommandField.text = "";
         }
         public static Dictionary<string, object> SlotData;
         public static async void ConnectToMultiworld()
@@ -269,6 +292,7 @@ namespace WPArchipelagoMod
             if (result.Successful)
             {
                 SlotData = (result as LoginSuccessful).SlotData;
+                Log(string.Join(", ", SlotData.Keys));
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
                 b.interactable = false;
@@ -299,7 +323,7 @@ namespace WPArchipelagoMod
                 s += $"<color={colourHex}>{part.Text}</color> ";
             }
             ConsoleLines.Add(s);
-            if(ConsoleLines.Count() > 20) ConsoleLines.RemoveAt(0);
+            if(ConsoleLines.Count() > 17) ConsoleLines.RemoveAt(0);
             Console.text = "";
             foreach(var l in ConsoleLines)
             {

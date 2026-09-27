@@ -16,7 +16,8 @@ class Goal(Choice):
 
 class RandomiseBonuses(Toggle):
     """
-    Whether or not to include the bonuses you get at the end of a round as items. Receiving one of these items will add what you need to the pool.
+    Whether or not to include the bonuses you get at the end of a round as items.
+    Receiving one of these items will add what you need to the pool.
     """
     default = True
     display_name = "Randomise Bonuses"
@@ -24,9 +25,9 @@ class RandomiseBonuses(Toggle):
 
 class AchievementSanity(Toggle):
     """
-    Add checks for every achievement in the game. Recommended if you have Randomise Bonuses enabled
+    Add checks for every achievement in the game
     """
-    default = True
+    default = False
     display_name = "Achievementsanity"
 
 class TrapChance(Range):
@@ -42,7 +43,7 @@ class TrapChance(Range):
 @dataclass
 class WordPlayOptions(PerGameCommonOptions):
     goal : Goal 
-    Randomise_Bonuses: RandomiseBonuses
+    randomise_bonuses: RandomiseBonuses
     Achievementsanity: AchievementSanity
     Trap_Chance: TrapChance
 
@@ -54,13 +55,13 @@ option_groups = [
 option_presets = {
     "easy": {
         "goal": Goal.option_hard,
-        "Randomise_Bonuses" : False,
+        "randomise_bonuses" : False,
         "Trap_Chance": 5,
         "Achievementsanity": False
     },
     "hard": {
         "goal": Goal.option_legendary,
-        "Randomise_Bonuses" : True,
+        "randomise_bonuses" : True,
         "Trap_Chance": 20,
         "Achievementsanity": True
     }
