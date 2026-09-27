@@ -64,6 +64,7 @@ namespace WPArchipelagoMod
                 {
                     if(i.ItemName == "Play") GameplayManager.AddPlay();
                     if(i.ItemName == "Refresh") GameplayManager.AddRefresh();
+                    if(i.ItemName.Contains("Trap")) GameplayManager.AddTrap(i.ItemName);
                 }
                 if(i.ItemName.Replace("ERS", "3").Replace("ING", "1").Length == 1)
                 {
@@ -164,7 +165,7 @@ namespace WPArchipelagoMod
 
             // Debug Connection
             slotField.text = "WordPlayTest";
-            portField.text = "64907";
+            portField.text = "50205";
 
             var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
             Destroy(buttonTemplate);
@@ -229,6 +230,7 @@ namespace WPArchipelagoMod
             }
             var panel = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel");
             Log("Finished Creating Console");
+            panel.GetComponent<Image>().raycastTarget = text.raycastTarget = false;
             panel.transform.SetParent(canvas.transform, true);
             DontDestroyOnLoad(canvas);
             Log("Made Console Permanent");

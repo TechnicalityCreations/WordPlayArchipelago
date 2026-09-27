@@ -71,19 +71,22 @@ ITEM_NAME_TO_ID = {
     "Modifiers - Double Refreshes": 77,
     "Modifiers - Refresh Zone": 78,
     "Modifiers - Return Tiles to Grid": 79,
-    "Special Tiles - Glass": 101,
-    "Special Tiles - Emerald": 102,
-    "Special Tiles - Diamond": 103,
-    "Special Tiles - Dots": 104,
-    "Special Tiles - Potion": 105,
-    "Special Tiles - Gold": 106,
-    "Special Tiles - Mirror": 107,
+    "Special Tiles - Glass": 80,
+    "Special Tiles - Emerald": 81,
+    "Special Tiles - Diamond": 82,
+    "Special Tiles - Dots": 83,
+    "Special Tiles - Potion": 84,
+    "Special Tiles - Gold": 85,
+    "Special Tiles - Mirror": 86,
     # 200-500 = Special Prog
     "Progressive Difficulty": 200,
     "Progressive Extra Tiles": 201,
+    "Progressive Max Word Length": 202,
     # 500+ Filler
     "Refresh": 501,
     "Play": 502,
+    "Polyglot Trap": 503,
+    "Special Trap": 504
 }
 
 
@@ -97,8 +100,16 @@ class WordPlayItem(Item):
 
 
 def get_random_filler_item_name(world: WordPlayWorld) -> str:
+    if world.random.randint(0, 100) < world.options.Trap_Chance:
+        if world.random.randint(0, 100) < 75:
+            return "Polyglot Trap"
+        else:
+            return "Special Trap"
+
     if world.random.randint(0, 100) < 50:
         return "Refresh"
+    
+
     return "Play"
 
 
@@ -122,18 +133,36 @@ startingWords = [
     "TUNE",
     "LONE",
 ]
+startingBonuses = [
+    "Upgrades - Shuffle",
+    "Modifiers - Multiplier",
+    "Modifiers - Bonus Points"
+]
 def create_all_items(world: WordPlayWorld) -> None:
     startingWord = startingWords[world.random.randint(0, len(startingWords) - 1)]
+    startingBonus = startingBonuses[world.random.randint(0, len(startingBonuses) - 1)]
     items = ITEM_NAME_TO_ID.keys()
-    progItems = [i for i in items if ITEM_NAME_TO_ID[i] < 200]
+    cap = 200
+    if not world.options.Randomise_Bonuses:
+        cap = 50
+    progItems = [i for i in items if ITEM_NAME_TO_ID[i] < cap]
     progPool = []
     for i in progItems:
         if i in startingWord:
             continue
+        if startingBonus == i:
+            continue
         progPool.append(create_item_with_correct_classification(world, i))
+    progPool.append(create_item_with_correct_classification(world, startingBonus))
     
     for i in range(0,3):
         progPool.append(create_item_with_correct_classification(world, "Progressive Difficulty"))
+
+    if world.options.Trap_Chance > 0:
+        progPool.append(create_item_with_correct_classification(world, "Polyglot Trap"))
+        progPool.append(create_item_with_correct_classification(world, "Special Trap"))
+    progPool.append(create_item_with_correct_classification(world, "Play"))
+    progPool.append(create_item_with_correct_classification(world, "Refresh"))
     itempool: list[Item] = progPool
 
     number_of_items = len(itempool)

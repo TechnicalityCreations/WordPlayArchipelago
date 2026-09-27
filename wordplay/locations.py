@@ -64,11 +64,13 @@ LOCATION_NAME_TO_ID = {
     "7LetterWord": 107,
     "8LetterWord": 108,
     "9LetterWord": 109,
+    "10LetterWord": 110,
     "10PointWord": 210,
     "15PointWord": 215,
     "20PointWord": 220,
     "25PointWord": 225,
     "30PointWord": 230,
+    "40PointWord": 240,
     "50PointWord": 250,
     "75PointWord": 275,
     "100PointWord": 300,
@@ -78,6 +80,24 @@ LOCATION_NAME_TO_ID = {
     "200PointWord": 400,
     "225PointWord": 425,
     "250PointWord": 450,
+    "Achievementsanity - No Problem": 500,
+    "Achievementsanity - Average Gamer": 501,
+    "Achievementsanity - Tough as Nails": 502,
+    "Achievementsanity - Total Wordsmith": 503,
+    "Achievementsanity - A to Z": 504,
+    "Achievementsanity - Incredible": 505,
+    "Achievementsanity - Beyond Incredible": 506,
+    "Achievementsanity - Mouthful": 507,
+    "Achievementsanity - Mind Over...": 508,
+    "Achievementsanity - Hey, that's the game's name!": 509,
+    "Achievementsanity - Big Points": 510,
+    "Achievementsanity - Super Scorer": 511,
+    "Achievementsanity - Hoarder": 512,
+    "Achievementsanity - Stuffed": 513,
+    "Achievementsanity - W*ldc*rd": 514,
+    "Achievementsanity - Super Lucky": 515,
+    "Achievementsanity - Uncut": 516,
+    "Achievementsanity - Midas Touch": 517,
 }
 
 
@@ -96,25 +116,7 @@ def create_all_locations(world: WordPlayWorld) -> None:
 
 def create_regular_locations(world: WordPlayWorld) -> None:
     menu = world.get_region("Menu")
-    locations = []
-    for i in range(1,14):
-        if i < 10:
-            locations.append(f"EasyRound{i}")
-        if i < 12:
-            locations.append(f"NormalRound{i}")
-            locations.append(f"HardRound{i}")
-            
-        locations.append(f"LegendaryRound{i}")
-
-    locations.append(f"EasyFinished")
-    locations.append(f"NormalFinished")
-    locations.append(f"HardFinished")
-    locations.append(f"LegendaryFinished")
-
-    for i in range(5,10):
-        locations.append(f"{i}LetterWord")
-
-    for i in [10, 15, 20, 25, 30, 50, 75, 100, 125, 150, 175, 200, 225, 250]:
-        locations.append(f"{i}PointWord")
-
+    locations = list(LOCATION_NAME_TO_ID.keys())
+    if not world.options.Achievementsanity:
+        locations = [loc for loc in locations if "Achievementsanity" not in loc]
     menu.add_locations(get_location_names_with_ids(locations), WordPlayLocation)
