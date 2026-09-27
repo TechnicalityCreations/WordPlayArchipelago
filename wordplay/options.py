@@ -12,7 +12,7 @@ class Goal(Choice):
     option_hard = 0
     option_legendary = 1
 
-    default = option_legendary
+    default = option_hard
 
 class RandomiseBonuses(Toggle):
     """
@@ -55,13 +55,13 @@ option_presets = {
     "easy": {
         "goal": Goal.option_hard,
         "Randomise_Bonuses" : False,
-        "Trap_Chance": 0.05,
+        "Trap_Chance": 5,
         "Achievementsanity": False
     },
     "hard": {
         "goal": Goal.option_legendary,
         "Randomise_Bonuses" : True,
-        "Trap_Chance": 0.2,
+        "Trap_Chance": 20,
         "Achievementsanity": True
     }
 }

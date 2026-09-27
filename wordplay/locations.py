@@ -118,5 +118,5 @@ def create_regular_locations(world: WordPlayWorld) -> None:
     menu = world.get_region("Menu")
     locations = list(LOCATION_NAME_TO_ID.keys())
     if not world.options.Achievementsanity:
-        locations = [loc from loc in locations if "Achievementsanity" not in loc]
+        locations = [loc for loc in locations if "Achievementsanity" not in loc]
     menu.add_locations(get_location_names_with_ids(locations), WordPlayLocation)
