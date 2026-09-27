@@ -277,6 +277,7 @@ namespace WPArchipelagoMod
                 resumeButton.interactable = MetaGameRules.Instance.hasInProgressData;
                 TurnAPPanelIntoConsole();
                 Session.MessageLog.OnMessageReceived += AddMessageToConsole;
+
                 return;
             }
         Failure:
@@ -295,11 +296,15 @@ namespace WPArchipelagoMod
                 var colourHex = $"#{BitConverter.ToString(new byte[]{c.R, c.G, c.B})}".Replace("-", "");
                 s += $"<color={colourHex}>{part.Text}</color> ";
             }
-            ConsoleLines.AddItem(s);
+            ConsoleLines.Add(s);
             if(ConsoleLines.Count() > 20) ConsoleLines.RemoveAt(0);
-            Console.text += "\n" + s;//string.Join('\n', ConsoleLines);
+            Console.text = "";
+            foreach(var l in ConsoleLines)
+            {
+                Console.text += l;
+                Console.text +="\n";
+            }
             Log(s);
-            Log(Console.text);
         }
         static FieldInfo SaveFilePath = AccessTools.Field(typeof(MetaGameSave), "saveFilePath");
         static List<string> LetterBagQueue = new List<string>();
@@ -313,6 +318,23 @@ namespace WPArchipelagoMod
             }
             Log(Session.Items.Any());
             Log(Session.Items.DequeueItem());
+        }
+        static async void Reconnect()
+        {
+            await Task.Delay(5000);
+            if (!Session.Socket.Connected)
+            {
+                try
+                {
+                    var connectResult = await Session.ConnectAsync();
+                }
+                catch
+                {
+                    Reconnect();
+                }
+            var result = await Session.LoginAsync("Word Play", SlotName, ItemsHandlingFlags.AllItems, password: Password);
+            }
+            Reconnect();
         }
     }
     public enum SceneType
