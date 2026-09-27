@@ -7,6 +7,27 @@ namespace WPArchipelagoMod
 {
     public static class GameplayManager
     {
+        static Dictionary<string, string> AchievementIDToLocation = new Dictionary<string, string>
+        {
+            {"achieve-00-easy", "Achievementsanity - No Problem"},
+            {"achieve-01-normal", "Achievementsanity - Average Gamer"},
+            {"achieve-02-hard", "Achievementsanity - Tough as Nails"},
+            {"achieve-03-legendary", "Achievementsanity - Total Wordsmith"},
+            {"achieve-06-alphabet", "Achievementsanity - A to Z"},
+            {"achieve-07-10letter", "Achievementsanity - Incredible"},
+            {"achieve-08-20letter", "Achievementsanity - Beyond Incredible"},
+            {"achieve-09-plus", "Achievementsanity - Mouthful"},
+            {"achieve-10-magnet", "Achievementsanity - Mind Over..."},
+            {"achieve-11-wordplay", "Achievementsanity - Hey, that's the game's name!"},
+            {"achieve-12-200", "Achievementsanity - Big Points"},
+            {"achieve-13-400", "Achievementsanity - Super Scorer"},
+            {"achieve-14-refresh", "Achievementsanity - Hoarder"},
+            {"achieve-15-letterbag", "Achievementsanity - Stuffed"},
+            {"achieve-16-wildcard", "Achievementsanity - W*ldc*rd"},
+            {"achieve-17-emerald", "Achievementsanity - Super Lucky"},
+            {"achieve-18-diamond", "Achievementsanity - Uncut"},
+            {"achieve-19-golden", "Achievementsanity - Midas Touch"}
+        };
         public static void Patch(Harmony h)
         {
             h.Patch(AccessTools.Method(typeof(SubmitWord), "WordWasAccepted"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(CheckWordLength)));
@@ -15,30 +36,57 @@ namespace WPArchipelagoMod
             h.Patch(AccessTools.Method(typeof(LogicManagerScript), "StartFreshGame"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(NewGame)));
             h.Patch(AccessTools.Method(typeof(LogicManagerScript), "LoadGameState"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(LoadGame)));
             h.Patch(AccessTools.Method(typeof(SaveData), "GetAllLogicData"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(SaveGame)));
+            h.Patch(AccessTools.Method(typeof(AchievementManager), nameof(AchievementManager.UnlockAchievement)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(CheckAchievement)));
             h.Patch(AccessTools.Method(typeof(BonusStore), nameof(BonusStore.PickThreeRandomUpgrades)), prefix: new HarmonyMethod(typeof(GameplayManager), nameof(EditUpgradesAvailable)));
             h.Patch(AccessTools.Method(typeof(uAddTile), "PickTileRandomly"), prefix: new HarmonyMethod(typeof(GameplayManager), nameof(EditRandomTiles)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(RestoreRandomTiles)));
 
         }
-        public static void EditRandomTiles(List<string> __allowedLetters, out string[] __state)
+        public static void CheckAchievement(object[] __args)
         {
-            __state = __allowedLetters.ToArray();
-            foreach(var s in __state)
+            if(!(bool)(Mod.SlotData["Achievementsanity"])) return;
+            if (AchievementIDToLocation.ContainsKey((string) __args[0]))
             {
-                if(!Mod.Has(s)) __allowedLetters.Remove(s);
+                Mod.CompleteCheck(AchievementIDToLocation[(string)__args[0]]);
             }
         }
-        public static void RestoreRandomTiles(List<string> __allowedLetters, string[] __state)
+        public static void AddTrap(string Trap)
         {
-            __allowedLetters.Clear();
+            switch (Trap)
+            {
+                default:
+                    break;
+            }
+        }
+        public static void EditRandomTiles(List<string> ___allowedLetters, out string[] __state)
+        {
+            __state = ___allowedLetters.ToArray();
             foreach(var s in __state)
             {
-                __allowedLetters.Add(s);
+                if(!Mod.Has(s)) ___allowedLetters.Remove(s);
+            }
+            if(___allowedLetters.Count == 0)
+            {
+                if(Mod.Has("A")) ___allowedLetters.Add("A");
+                if(Mod.Has("E")) ___allowedLetters.Add("E");
+                if(Mod.Has("I")) ___allowedLetters.Add("I");
+                if(Mod.Has("O")) ___allowedLetters.Add("O");
+                if(Mod.Has("U")) ___allowedLetters.Add("U");
+            }
+        }
+        public static void RestoreRandomTiles(List<string> ___allowedLetters, string[] __state)
+        {
+            ___allowedLetters.Clear();
+            foreach(var s in __state)
+            {
+                ___allowedLetters.Add(s);
             }
         }
         public static void EditUpgradesAvailable(BonusStore __instance)
         {
-            var list = new List<BaseBonus>();
-            list.Add(Bonus("Gift - Add Refreshes"));
+            if(!(bool)Mod.SlotData["Randomise_Bonuses"]) return;
+            MetaGameRules.Instance.levelCompletion[1] = true;
+            var list = __instance.everyBonus;
+            __instance.everyBonus.Clear();
             list.Add(Bonus("Gift - Add Refreshes"));
             list.Add(Bonus("Gift - Add Random Standard"));
             list.Add(Bonus("Gift - Add Random Standard High Value"));
@@ -174,7 +222,6 @@ namespace WPArchipelagoMod
                 list.Add(Bonus("Up - 3 Standard Clones"));
                 list.Add(Bonus("Modifier - Duplicate More Than 3 Special"));
                 list.Add(Bonus("Modifier - 4 Tile Word, Dupe 1st"));
-                list.Add(Bonus("Modifier - One Extra Tile"));
             }
             if(Mod.Has("Modifiers - Bonus Points"))
             {
@@ -246,7 +293,7 @@ namespace WPArchipelagoMod
             {
                 list.Add(Bonus("Gift - Add Mirror Tiles"));
             }
-            __instance.everyBonus = list;
+            Mod.Log($"Entering shop with {list.Count} options");
         }
         static BaseBonus Bonus(string name)
         {
