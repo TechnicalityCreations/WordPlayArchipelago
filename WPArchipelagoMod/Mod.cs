@@ -45,6 +45,7 @@ namespace WPArchipelagoMod
             TileManager.Patch(h);
             GameplayManager.Patch(h);
             SceneManager.activeSceneChanged += SetUpTitleScreenUI;
+            h.Patch(AccessTools.Method(typeof(KeyboardControl), "OnTextInput"), new HarmonyMethod(typeof(Mod), nameof(BlockTextInput)));
             Log("Archipelago has loaded successfully");
         }
         public static SceneType CurrentScene;
@@ -165,7 +166,7 @@ namespace WPArchipelagoMod
 
             // Debug Connection
             slotField.text = "WordPlayTest";
-            portField.text = "38623";
+            portField.text = "53843";
 
             var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
             Destroy(buttonTemplate);
@@ -209,6 +210,11 @@ namespace WPArchipelagoMod
             Log($"Completed Check "+name);
         }
         static TextMeshProUGUI Console;
+        public static bool BlockTextInput()
+        {
+            if(CommandField.isFocused) return false;
+            return true;
+        }
         public static void TurnAPPanelIntoConsole()
         {
             Log("Turning AP Panel into Console");
@@ -253,9 +259,10 @@ namespace WPArchipelagoMod
             Log("Made Console Permanent");
             Console = text;
         }
-        static TMP_InputField CommandField;
+        internal static TMP_InputField CommandField;
         public static void SendMessage()
         {
+            CommandField.DeactivateInputField();
             Session.Say(CommandField.text);
             CommandField.text = "";
         }
@@ -293,6 +300,7 @@ namespace WPArchipelagoMod
             {
                 SlotData = (result as LoginSuccessful).SlotData;
                 Log(string.Join(", ", SlotData.Keys));
+                Log(string.Join(", ", SlotData.Values));
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
                 b.interactable = false;
@@ -323,13 +331,8 @@ namespace WPArchipelagoMod
                 s += $"<color={colourHex}>{part.Text}</color> ";
             }
             ConsoleLines.Add(s);
-            if(ConsoleLines.Count() > 17) ConsoleLines.RemoveAt(0);
-            Console.text = "";
-            foreach(var l in ConsoleLines)
-            {
-                Console.text += l;
-                Console.text +="\n";
-            }
+            if(ConsoleLines.Count() > 15) ConsoleLines.RemoveAt(0);
+            Console.text = string.Join("\n", ConsoleLines);
             Log(s);
         }
         static FieldInfo SaveFilePath = AccessTools.Field(typeof(MetaGameSave), "saveFilePath");

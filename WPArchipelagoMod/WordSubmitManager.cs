@@ -43,7 +43,7 @@ namespace WPArchipelagoMod
         }
         public static void CheckAchievement(object[] __args)
         {
-            if(!(bool)(Mod.SlotData["Achievementsanity"])) return;
+            if((long)(Mod.SlotData["Achievementsanity"]) == 0) return;
             if (AchievementIDToLocation.ContainsKey((string) __args[0]))
             {
                 Mod.CompleteCheck(AchievementIDToLocation[(string)__args[0]]);
@@ -81,14 +81,17 @@ namespace WPArchipelagoMod
         };
         public static void AddTrap(string Trap)
         {
+            Mod.Log("Received Trap");
             switch (Trap)
             {
                 case "Polyglot Trap":
+                    Mod.Log("Polyglot Trap");
                     for(int i = 0; i < 15; i++)
                     {
+                        var l = PolyglotTiles[Random.Range(0, PolyglotTiles.Length-1)];
                         var m = GameObject.Find("Managers/Letter Bag").GetComponent<LetterBagManager>();
-                        var l = m.LettersInPlay[i];
-                        l = PolyglotTiles[Random.Range(0, PolyglotTiles.Length-1)] + l.Remove(0, 1);
+                        var letterBag = m.LetterBag;
+                        letterBag.Add(l + "S0000");
                     }
                     break;
                 default:
@@ -121,7 +124,7 @@ namespace WPArchipelagoMod
         }
         public static void EditUpgradesAvailable(BonusStore __instance)
         {
-            if(!(bool)Mod.SlotData["randomise_Bonuses"]) return;
+            if((long)Mod.SlotData["randomise_bonuses"] == 0) return;
             MetaGameRules.Instance.levelCompletion[1] = true;
             var list = __instance.everyBonus;
             __instance.everyBonus.Clear();
@@ -137,7 +140,7 @@ namespace WPArchipelagoMod
             if(Mod.Has("ERS")) list.Add(Bonus("Gift - Add Ers"));
             if(Mod.Has("+")) list.Add(Bonus("Gift - Add +"));
             if(Mod.Has("!")) list.Add(Bonus("Gift - Add !"));
-            if(Mod.Has("Upgrades - Shuffle"))
+            if(true)
             {
                 list.Add(Bonus("Up - Shuffle for Consonant"));
                 list.Add(Bonus("Up - Shuffle for Vowel"));
@@ -379,11 +382,12 @@ namespace WPArchipelagoMod
             if(length > 6) Mod.CompleteCheck("7LetterWord");
             if(length > 7) Mod.CompleteCheck("8LetterWord");
             if(length > 8) Mod.CompleteCheck("9LetterWord");
+            if(length > 9) Mod.CompleteCheck("10LetterWord");
         }
         public static void CheckWordPoints(SubmitWord __instance)
         {
             var p = __instance.currentFinalScore;
-            foreach(var n in new int[] {10, 15, 20, 25,30, 50, 75, 100, 125, 150, 175, 200, 225, 250})
+            foreach(var n in new int[] {10, 15, 20, 25,30, 40, 50, 75, 100, 125, 150, 175, 200, 225, 250})
             {
                 if(p >= n)
                 {
@@ -421,7 +425,7 @@ namespace WPArchipelagoMod
                     if(r == __instance.roundsToWin)
                     {
                         Mod.CompleteCheck($"HardFinished");
-                        if((int)Mod.SlotData["goal"] == 0) Mod.Session.SetGoalAchieved();
+                        if((long)Mod.SlotData["goal"] == 0) Mod.Session.SetGoalAchieved();
                     }
                     else
                         Mod.CompleteCheck($"HardRound{r}");
@@ -430,7 +434,7 @@ namespace WPArchipelagoMod
                     if(r == __instance.roundsToWin)
                     {
                         Mod.CompleteCheck($"LegendaryFinished");
-                        if((int)Mod.SlotData["goal"] == 1) Mod.Session.SetGoalAchieved();
+                        if((long)Mod.SlotData["goal"] == 1) Mod.Session.SetGoalAchieved();
                     }
                         
                     else

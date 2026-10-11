@@ -15,8 +15,9 @@ namespace WPArchipelagoMod
             Mod.Log("Initialising Difficulty Manager");
             ModifyDifficultySelectUI();
             Normal = GameObject.Find("Canvas - Main/Level Select/Picker/Level Tiles - Strategy/The Tiles/Level - B Normal");
-            Hard = GameObject.Find("Canvas - Main/Level Select/Picker/Level Tiles - Strategy/The Tiles/Level - C Hard");
-            Legendary = GameObject.Find("Canvas - Main/Level Select/Picker/Level Tiles - Strategy/The Tiles/Level - L Legendary");
+            Hard = GameObject.Find("Canvas - Main/Level Sel
+            t/Picker/Level Tiles - Strategy/The Tiles/Level - C Hard");
+            egendary = GameObject.Find("Canvas - Main/Level Select/Picker/Level Tiles - Strategy/The Tiles/Level - L Legendary");
             UpdateDifficultyButtons();
             Mod.Log("Initialised Difficulty Manager");
         }

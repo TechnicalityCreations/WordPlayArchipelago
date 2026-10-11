@@ -42,7 +42,6 @@ ITEM_NAME_TO_ID = {
     "+": 30,
     "!": 31,
     # Upgrades
-    "Upgrades - Shuffle": 50,
     "Modifiers - Hold Zone": 51,
     "Modifiers - Refresh Ignores Submitted": 52,
     "Modifiers - Multiplier": 53,
@@ -100,7 +99,7 @@ class WordPlayItem(Item):
 
 
 def get_random_filler_item_name(world: WordPlayWorld) -> str:
-    if world.random.randint(0, 100) < world.options.Trap_Chance:
+    if world.random.randint(0, 100) < world.options.trap_chance:
         if world.random.randint(0, 100) < 75:
             return "Polyglot Trap"
         else:
@@ -133,14 +132,9 @@ startingWords = [
     "TUNE",
     "LONE",
 ]
-startingBonuses = [
-    "Upgrades - Shuffle",
-    "Modifiers - Multiplier",
-    "Modifiers - Bonus Points"
-]
+
 def create_all_items(world: WordPlayWorld) -> None:
     startingWord = startingWords[world.random.randint(0, len(startingWords) - 1)]
-    startingBonus = startingBonuses[world.random.randint(0, len(startingBonuses) - 1)]
     items = ITEM_NAME_TO_ID.keys()
     cap = 200
     if not world.options.randomise_bonuses:
@@ -150,15 +144,12 @@ def create_all_items(world: WordPlayWorld) -> None:
     for i in progItems:
         if i in startingWord:
             continue
-        if startingBonus == i:
-            continue
         progPool.append(create_item_with_correct_classification(world, i))
-    progPool.append(create_item_with_correct_classification(world, startingBonus))
     
     for i in range(0,3):
         progPool.append(create_item_with_correct_classification(world, "Progressive Difficulty"))
 
-    if world.options.Trap_Chance > 0:
+    if world.options.trap_chance > 0:
         progPool.append(create_item_with_correct_classification(world, "Polyglot Trap"))
         progPool.append(create_item_with_correct_classification(world, "Special Trap"))
     progPool.append(create_item_with_correct_classification(world, "Play"))

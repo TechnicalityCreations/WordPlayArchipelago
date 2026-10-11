@@ -22,6 +22,13 @@ class RandomiseBonuses(Toggle):
     default = True
     display_name = "Randomise Bonuses"
 
+class DeathLink(Toggle):
+    """
+    When you lose a game, cause players in other games with deathlink enabled to die.
+    """
+    default = False
+    display_name = "Deathlink"
+
 
 class AchievementSanity(Toggle):
     """
@@ -44,25 +51,39 @@ class TrapChance(Range):
 class WordPlayOptions(PerGameCommonOptions):
     goal : Goal 
     randomise_bonuses: RandomiseBonuses
-    Achievementsanity: AchievementSanity
-    Trap_Chance: TrapChance
+    achievementsanity: AchievementSanity
+    trap_chance: TrapChance
+    deathlink: DeathLink
 
 
 option_groups = [
-
+    OptionGroup(
+        "Item Options",
+        [RandomiseBonuses, TrapChance],
+    ),
+    OptionGroup(
+        "Sanity Options",
+        [AchievementSanity],
+    ),
+    OptionGroup(
+        "Deathlink",
+        [DeathLink],
+    ),
 ]
 
 option_presets = {
     "easy": {
         "goal": Goal.option_hard,
         "randomise_bonuses" : False,
-        "Trap_Chance": 5,
-        "Achievementsanity": False
+        "trap_chance": 5,
+        "achievementsanity": False,
+        "deathlink": False,
     },
     "hard": {
         "goal": Goal.option_legendary,
         "randomise_bonuses" : True,
-        "Trap_Chance": 20,
-        "Achievementsanity": True
+        "trap_chance": 20,
+        "achievementsanity": True,
+        "deathlink": True,
     }
 }

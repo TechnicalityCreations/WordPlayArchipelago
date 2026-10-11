@@ -55,7 +55,6 @@ namespace WPArchipelagoMod
             for(int i = 0; i < count; i++)
             {
                 letterBag.Add(item + "S0000");
-                m.LettersInPlay.Add(item + "S0000");
             }
             Mod.Log($"Added {count} of {item} to letter bag");
         }
