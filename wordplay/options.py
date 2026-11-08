@@ -29,14 +29,14 @@ class DeathLink(Toggle):
     default = False
     display_name = "Deathlink"
 
-
+'''
 class AchievementSanity(Toggle):
     """
     Add checks for every achievement in the game
     """
     default = False
     display_name = "Achievementsanity"
-
+'''
 class TrapChance(Range):
     """
     The percentage chance of getting a trap instead of a filler item.
@@ -51,7 +51,7 @@ class TrapChance(Range):
 class WordPlayOptions(PerGameCommonOptions):
     goal : Goal 
     randomise_bonuses: RandomiseBonuses
-    achievementsanity: AchievementSanity
+    #achievementsanity: AchievementSanity
     trap_chance: TrapChance
     deathlink: DeathLink
 
@@ -61,10 +61,10 @@ option_groups = [
         "Item Options",
         [RandomiseBonuses, TrapChance],
     ),
-    OptionGroup(
-        "Sanity Options",
-        [AchievementSanity],
-    ),
+    #OptionGroup(
+    #    "Sanity Options",
+    #    [AchievementSanity],
+    #),
     OptionGroup(
         "Deathlink",
         [DeathLink],
@@ -76,14 +76,12 @@ option_presets = {
         "goal": Goal.option_hard,
         "randomise_bonuses" : False,
         "trap_chance": 5,
-        "achievementsanity": False,
         "deathlink": False,
     },
     "hard": {
         "goal": Goal.option_legendary,
         "randomise_bonuses" : True,
         "trap_chance": 20,
-        "achievementsanity": True,
         "deathlink": True,
     }
 }

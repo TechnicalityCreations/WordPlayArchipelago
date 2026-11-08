@@ -44,5 +44,5 @@ class WordPlayWorld(World):
 
     def fill_slot_data(self) -> Mapping[str, Any]:
         return self.options.as_dict(
-            "goal", "randomise_bonuses", "deathlink", "achievementsanity"
+            "goal", "randomise_bonuses", "deathlink"#, "achievementsanity"
         )
