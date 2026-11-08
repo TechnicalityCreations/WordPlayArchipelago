@@ -19,8 +19,37 @@ using System.Linq;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Packets;
 using UnityEngine.Playables;
+using System.Collections.Concurrent;
 namespace WPArchipelagoMod
 {
+    public class NotificationUpdater : MonoBehaviour
+        {
+            private void Awake()
+        {
+            Mod.Log("Notification Updater Awake");
+            DontDestroyOnLoad(gameObject);
+        }
+            void Update()
+            {
+                if(Mod.CurrentScene == SceneType.Game)
+                {
+                    if(Mod.timeLeft > 0)
+                    {
+                        Mod.timeLeft-= Time.deltaTime;
+                        if(Mod.timeLeft <= 0)
+                            Mod.Notification.HideTutorialMessage();
+                    }
+                    else
+                    {
+                        if(Mod.Messages.TryDequeue(out var m))
+                        {
+                            Mod.Notification.TutorialMessage(m, false, true, true);
+                            Mod.timeLeft = 3;
+                        }
+                    }
+                }
+            }
+        }
     [BepInPlugin("TechnicalityCreations.WPArchipelagoMod", "Archipelago", "0.1.0")]
     public class Mod : BaseUnityPlugin
     {
@@ -39,29 +68,9 @@ namespace WPArchipelagoMod
         {
             inst = this;
         }
-        static Queue<string> Messages;
-        float timeLeft;
-        void Update()
-        {
-            Log("Update");
-            if(CurrentScene == SceneType.Game)
-            {
-                if(timeLeft > 0)
-                {
-                    timeLeft-= Time.deltaTime;
-                    if(timeLeft <= 0)
-                        Notification.HideTutorialMessage();
-                }
-                else
-                {
-                    if(Messages.Count > 0)
-                    {
-                        Notification.TutorialMessage(Messages.Dequeue(), false, true, true);
-                        timeLeft = 3;
-                    }
-                }
-            }
-        }
+        internal static ConcurrentQueue<string> Messages;
+        internal static float timeLeft;
+        
         void Awake()
         {
             Log("Archipelago is loading");
@@ -71,6 +80,7 @@ namespace WPArchipelagoMod
             SceneManager.activeSceneChanged += SetUpTitleScreenUI;
             h.Patch(AccessTools.Method(typeof(KeyboardControl), "OnTextInput"), new HarmonyMethod(typeof(Mod), nameof(BlockTextInput)));
             Log("Archipelago has loaded successfully");
+            
         }
         public static SceneType CurrentScene;
         public static bool Has(string name) => Count(name) > 0;
@@ -132,7 +142,7 @@ namespace WPArchipelagoMod
             Notification = GameObject.Instantiate(a, a.transform.parent);
             Notification.transform.position = new Vector3(960, 940, 0);
             Notification.name = "AP Notification";
-            Messages = new Queue<string>();
+            Messages = new ConcurrentQueue<string>();
             CurrentScene = SceneType.Game;
             var queue = LetterBagQueue.ToArray();
             foreach(var l in queue)
@@ -155,6 +165,7 @@ namespace WPArchipelagoMod
                 Log("Blocked SetUpTitleScreenUI");
                 return;
             }
+            
             Log("Title Screen Loaded");
             if (isConnected)
             {
@@ -165,6 +176,9 @@ namespace WPArchipelagoMod
                 DifficultyManager.InitialiseDifficultyOptions();
                 return;
             }
+            var u = new GameObject("Notification Updater");
+            u.AddComponent<NotificationUpdater>();
+            DontDestroyOnLoad(u);
             var oPanel = GameObject.Find("Other Panel");
             var aPanel = Instantiate(oPanel, GameObject.Find("Canvas - Main/Title Screen").transform);
             aPanel.name = "Archipelago Panel";
