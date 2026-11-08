@@ -8,6 +8,7 @@ from . import items
 
 if TYPE_CHECKING:
     from .world import WordPlayWorld
+    from .options import Goal
 
 
 LOCATION_NAME_TO_ID = {
@@ -145,4 +146,6 @@ def create_regular_locations(world: WordPlayWorld) -> None:
     locations = list(LOCATION_NAME_TO_ID.keys())
     if True: #not world.options.achievementsanity:
         locations = [loc for loc in locations if "Achievementsanity" not in loc]
+    if world.options.goal == Goal.option_hard: #not world.options.achievementsanity:
+        locations = [loc for loc in locations if "Legendary" not in loc]
     menu.add_locations(get_location_names_with_ids(locations), WordPlayLocation)

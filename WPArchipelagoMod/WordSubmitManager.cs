@@ -2,6 +2,7 @@ using HarmonyLib;
 using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace WPArchipelagoMod
 {
@@ -374,21 +375,48 @@ namespace WPArchipelagoMod
             logic.ChangeNumberOfRefreshes(1);
             Mod.Log($"Recieved Refresh: Increased from {prevRefresh} to {logic.numberOfRefreshes}");
         }
-        public static void CheckWordLengthAndLetters(SubmitWord __instance)
+        public async static void CheckWordLengthAndLetters(SubmitWord __instance)
         {
-            var length = Mathf.Min(__instance.currentWordLength, 9);
+            var length = __instance.currentWordLength;
             var word = __instance.currentWord;
-            if(length > 4) Mod.CompleteCheck("5LetterWord");
-            if(length > 5) Mod.CompleteCheck("6LetterWord");
-            if(length > 6) Mod.CompleteCheck("7LetterWord");
-            if(length > 7) Mod.CompleteCheck("8LetterWord");
-            if(length > 8) Mod.CompleteCheck("9LetterWord");
-            if(length > 9) Mod.CompleteCheck("10LetterWord");
+            if(length > 4)
+            {
+                Mod.CompleteCheck("5LetterWord");
+                await Task.Delay(delay);
+            }
+            if(length > 5)
+            {
+                Mod.CompleteCheck("6LetterWord");
+                await Task.Delay(delay);
+            }
+            if(length > 6)
+            {
+                Mod.CompleteCheck("7LetterWord");
+                await Task.Delay(delay);
+            }
+            if(length > 7)
+            {
+                Mod.CompleteCheck("8LetterWord");
+                await Task.Delay(delay);
+            }
+            if(length > 8)
+            {
+                Mod.CompleteCheck("9LetterWord");
+                await Task.Delay(delay);
+            }
+            if(length > 9)
+            {
+                Mod.CompleteCheck("10LetterWord");
+                await Task.Delay(delay);
+            }
             foreach(var l in word)
             {
+                Mod.Log("Checking letter "+l);
                 Mod.CompleteCheck("UsedLetter"+l);
+                await Task.Delay(delay);
             }
         }
+        const int delay = 600;
         public static void CheckWordPoints(SubmitWord __instance)
         {
             var p = __instance.currentFinalScore;

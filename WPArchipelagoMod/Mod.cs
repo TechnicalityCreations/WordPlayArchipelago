@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Packets;
+using UnityEngine.Playables;
 namespace WPArchipelagoMod
 {
     [BepInPlugin("TechnicalityCreations.WPArchipelagoMod", "Archipelago", "0.1.0")]
@@ -86,9 +87,17 @@ namespace WPArchipelagoMod
             }
         }
         int attempt = 0;
+        public static LastWordArea Notification;
         public void SetUpGame()
         {
             Log("Game Scene Loaded");
+            Messages = new Queue<string>();
+            var a = GameObject.FindAnyObjectByType<LastWordArea>();
+            a.transform.localScale = Vector2.one * 0.75f;
+            Notification = GameObject.Instantiate(a, a.transform.parent);
+            Notification.transform.position = new Vector3(960, 940, 0);
+            Notification.name = "AP Notification";
+            RunMessages();
             CurrentScene = SceneType.Game;
             var queue = LetterBagQueue.ToArray();
             foreach(var l in queue)
@@ -171,9 +180,6 @@ namespace WPArchipelagoMod
             hostField.text = "archipelago.gg";
             Log("Loaded UI");
 
-            // Debug Connection
-            slotField.text = "WordPlayTest";
-            portField.text = "53843";
 
             var connect = Instantiate(buttonTemplate, buttonTemplate.transform.parent);
             Destroy(buttonTemplate);
@@ -203,11 +209,14 @@ namespace WPArchipelagoMod
             var resumeBubble = GameObject.Find("Canvas - Main/Title Screen/Buttons/Resume Button/Resume Info/Bubble");
 
             playButton.interactable = false;
+            playButton.enabled = false;
             resumeButton.interactable = false;
+            resumeButton.enabled = false;
             resumeBubble.SetActive(false);
             Log("Connected to Connect Button");
         }
         static string Server, PortNumber, Password, SlotName;
+        public static Queue<string> Messages;
         internal static async void CompleteCheck(string name)
         {
             Log($"Completing Check "+name);
@@ -228,10 +237,22 @@ namespace WPArchipelagoMod
             Log($"Completed Check "+name);
             if(CurrentScene == SceneType.Game && item.Count > 0)
             {
+                await Task.Delay(1500);
                 var i = item[0];
-                var wordBar = GameObject.FindAnyObjectByType<LastWordArea>();
-                wordBar.TutorialMessage($"Sent '{i.ItemDisplayName}' to {i.Player}", true, true, true);
+                Messages.Enqueue($"Sent '{i.ItemDisplayName}' to {i.Player}");
             }
+        }
+        static async void RunMessages()
+        {
+            if(CurrentScene != SceneType.Game) return;
+            while(Messages.Count == 0)
+            {
+                await Task.Delay(200);
+            }
+            Notification.TutorialMessage(Messages.Dequeue(), false, true, true);
+            await Task.Delay(4000);
+            Notification.HideTutorialMessage();
+            RunMessages();
         }
         static TextMeshProUGUI Console;
         public static bool BlockTextInput()
@@ -302,6 +323,7 @@ namespace WPArchipelagoMod
             var b = button.GetComponent<Button>();
             var bText = button.GetComponentInChildren<TextMeshProUGUI>();
             bText.text = "Connecting";
+            bText.color = Color.black;
             b.enabled = false;
             Server = GameObject.Find(apPanelPath + "Host").GetComponent<TMP_InputField>().text;
             PortNumber = GameObject.Find(apPanelPath + "Port").GetComponent<TMP_InputField>().text;
@@ -327,12 +349,13 @@ namespace WPArchipelagoMod
                 Log(string.Join(", ", SlotData.Values));
                 var playButton = GameObject.Find("Canvas - Main/Title Screen/Buttons/Play Button").GetComponent<Button>();
                 playButton.interactable = true;
+                playButton.enabled = true;
                 b.interactable = false;
                 DifficultyManager.InitialiseDifficultyOptions();
                 LogRecievedItems();
                 SaveFilePath.SetValue(MetaGameSave.Instance, Path.Combine(Application.persistentDataPath, $"archipelago{PortNumber}{SlotName}savedata.json"));
                 MetaGameSave.Instance.LoadData();
-                resumeButton.interactable = MetaGameRules.Instance.hasInProgressData;
+                resumeButton.interactable = resumeButton.enabled = MetaGameRules.Instance.hasInProgressData;
                 TurnAPPanelIntoConsole();
                 Session.MessageLog.OnMessageReceived += AddMessageToConsole;
 
@@ -340,7 +363,9 @@ namespace WPArchipelagoMod
             }
         Failure:
             bText.text = "Couldn't Connect";
+            bText.color = Color.red;
             b.interactable = true;
+            b.enabled = true;
             Log("Failure to Connect");
             Session = null;
         }

@@ -6,6 +6,7 @@ from BaseClasses import Item, ItemClassification
 
 if TYPE_CHECKING:
     from .world import WordPlayWorld
+    from .options import Goal
 
 ITEM_NAME_TO_ID = {
     # 1-199 Single Items
@@ -100,10 +101,10 @@ class WordPlayItem(Item):
 
 def get_random_filler_item_name(world: WordPlayWorld) -> str:
     if world.random.randint(0, 100) < world.options.trap_chance:
-        if world.random.randint(0, 100) < 75:
+        #if world.random.randint(0, 100) < 75:
             return "Polyglot Trap"
-        else:
-            return "Special Trap"
+        #else:
+        #    return "Special Trap"
 
     if world.random.randint(0, 100) < 50:
         return "Refresh"
@@ -146,9 +147,10 @@ def create_all_items(world: WordPlayWorld) -> None:
             continue
         progPool.append(create_item_with_correct_classification(world, i))
     
-    for i in range(0,3):
+    for i in range(0,2):
         progPool.append(create_item_with_correct_classification(world, "Progressive Difficulty"))
-
+    if world.options.goal == Goal.option_legendary:
+        progPool.append(create_item_with_correct_classification(world, "Progressive Difficulty"))
     if world.options.trap_chance > 0:
         progPool.append(create_item_with_correct_classification(world, "Polyglot Trap"))
         progPool.append(create_item_with_correct_classification(world, "Special Trap"))
