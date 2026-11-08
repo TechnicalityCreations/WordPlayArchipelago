@@ -62,8 +62,14 @@ namespace WPArchipelagoMod
                 if(CurrentScene == SceneType.Game)
                 {
                     var wordBar = GameObject.FindAnyObjectByType<LastWordArea>();
-
-                    wordBar.TutorialMessage($"Received '{i.ItemDisplayName}' from {i.Player}", true, true, true);
+                    if(i.Player.Name != Session.Players.ActivePlayer.Name)
+                    {
+                        Notification.TutorialMessage($"Received '{i.ItemDisplayName}' from {i.Player}", false, true, true);
+                    }
+                    else
+                    {
+                        Notification.TutorialMessage($"Found '{i.ItemDisplayName}'", false, true, true);
+                    }
                 }
                 if(i.ItemName == "Progressive Difficulty" && CurrentScene == SceneType.Title)
                 {
@@ -91,13 +97,11 @@ namespace WPArchipelagoMod
         public void SetUpGame()
         {
             Log("Game Scene Loaded");
-            Messages = new Queue<string>();
             var a = GameObject.FindAnyObjectByType<LastWordArea>();
             a.transform.localScale = Vector2.one * 0.75f;
             Notification = GameObject.Instantiate(a, a.transform.parent);
             Notification.transform.position = new Vector3(960, 940, 0);
             Notification.name = "AP Notification";
-            RunMessages();
             CurrentScene = SceneType.Game;
             var queue = LetterBagQueue.ToArray();
             foreach(var l in queue)
@@ -216,7 +220,6 @@ namespace WPArchipelagoMod
             Log("Connected to Connect Button");
         }
         static string Server, PortNumber, Password, SlotName;
-        public static Queue<string> Messages;
         internal static async void CompleteCheck(string name)
         {
             Log($"Completing Check "+name);
@@ -235,24 +238,12 @@ namespace WPArchipelagoMod
             }
             await Session.Locations.CompleteLocationChecksAsync(id);
             Log($"Completed Check "+name);
-            if(CurrentScene == SceneType.Game && item.Count > 0)
+            if(CurrentScene == SceneType.Game)
             {
                 await Task.Delay(1500);
-                var i = item[0];
-                Messages.Enqueue($"Sent '{i.ItemDisplayName}' to {i.Player}");
+                var i = item[id];
+                if(i.Player.Name != Session.Players.ActivePlayer.Name) Notification.TutorialMessage($"Sent '{i.ItemDisplayName}' to {i.Player}", false, true, true);
             }
-        }
-        static async void RunMessages()
-        {
-            if(CurrentScene != SceneType.Game) return;
-            while(Messages.Count == 0)
-            {
-                await Task.Delay(200);
-            }
-            Notification.TutorialMessage(Messages.Dequeue(), false, true, true);
-            await Task.Delay(4000);
-            Notification.HideTutorialMessage();
-            RunMessages();
         }
         static TextMeshProUGUI Console;
         public static bool BlockTextInput()

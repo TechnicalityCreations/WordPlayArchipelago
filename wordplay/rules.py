@@ -19,7 +19,7 @@ def set_all_location_rules(world: WordPlayWorld) -> None:
     hard : Rule = Has("Progressive Difficulty", 2)
     legend : Rule = Has("Progressive Difficulty", 3)
 
-    locations = [l for l in LOCATION_NAME_TO_ID.keys() if "Achievementsanity" not in l]
+    locations = [l for l in LOCATION_NAME_TO_ID.keys() if ("Achievementsanity" not in l) and ("Legendary" not in l or world.options.goal == Goal.option_legendary)]
 
     for l in locations:
         loc = world.get_location(l)
@@ -33,7 +33,7 @@ def set_all_location_rules(world: WordPlayWorld) -> None:
             world.set_rule(loc, HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "D", "G", "P", "Y", "H", count=13))
         if "UsedLetter" in l:
             world.set_rule(loc, Has(l.replace("UsedLetter", "")))
-    world.set_rule("UsedLetterQ", HasAll("Q", "U"))
+    world.set_rule(world.get_location("UsedLetterQ"), HasAll("Q", "U"))
     if False:#world.options.achievementsanity:
         world.set_rule(world.get_location("Achievementsanity - Average Gamer"), normal&HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "D", "G", "P", "Y", "H", count=11))
         world.set_rule(world.get_location("Achievementsanity - Tough as Nails"), hard&HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "D", "G", "M", "P", "Y", "H", count= 13))

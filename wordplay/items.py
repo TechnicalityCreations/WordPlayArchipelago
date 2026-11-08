@@ -6,7 +6,7 @@ from BaseClasses import Item, ItemClassification
 
 if TYPE_CHECKING:
     from .world import WordPlayWorld
-    from .options import Goal
+from .options import Goal
 
 ITEM_NAME_TO_ID = {
     # 1-199 Single Items

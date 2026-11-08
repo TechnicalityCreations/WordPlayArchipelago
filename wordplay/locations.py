@@ -8,7 +8,7 @@ from . import items
 
 if TYPE_CHECKING:
     from .world import WordPlayWorld
-    from .options import Goal
+from .options import Goal
 
 
 LOCATION_NAME_TO_ID = {
