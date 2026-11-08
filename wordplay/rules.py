@@ -31,7 +31,8 @@ def set_all_location_rules(world: WordPlayWorld) -> None:
             world.set_rule(loc, legend&HasFromList("A","B","C","D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", count=16))
         if "PointWord" in l and l.removesuffix("PointWord") not in ["15", "20", "25", "30", "40"]:
             world.set_rule(loc, HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "D", "G", "P", "Y", "H", count=13))
-            
+        if "UsedLetter" in l:
+            world.set_rule(loc, Has(l.replace("UsedLetter", "")))
     if False:#world.options.achievementsanity:
         world.set_rule(world.get_location("Achievementsanity - Average Gamer"), normal&HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "D", "G", "P", "Y", "H", count=11))
         world.set_rule(world.get_location("Achievementsanity - Tough as Nails"), hard&HasFromList("A", "E", "I", "L", "N", "O", "R", "S", "T", "D", "G", "M", "P", "Y", "H", count= 13))

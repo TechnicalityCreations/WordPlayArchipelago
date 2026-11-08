@@ -55,8 +55,15 @@ namespace WPArchipelagoMod
         {
             while (helper.Any())
             {
+                
                 var i = helper.DequeueItem();
                 Log("Item Recieved: " + i.ItemName);
+                if(CurrentScene == SceneType.Game)
+                {
+                    var wordBar = GameObject.FindAnyObjectByType<LastWordArea>();
+
+                    wordBar.TutorialMessage($"Received '{i.ItemDisplayName}' from {i.Player}", true, true, true);
+                }
                 if(i.ItemName == "Progressive Difficulty" && CurrentScene == SceneType.Title)
                 {
                     DifficultyManager.UpdateDifficultyButtons();
@@ -205,9 +212,26 @@ namespace WPArchipelagoMod
         {
             Log($"Completing Check "+name);
             var id = Session.Locations.GetLocationIdFromName("Word Play", name);
+            if(id == -1)
+            {
+                Log($"Location {name} not found");
+                return;
+            }
+            var item = await Session.Locations.ScoutLocationsAsync(id);
             Log($"Check ID is "+id);
+            if (Session.Locations.AllLocationsChecked.Contains(id))
+            {
+                Log("Check already complete");
+                return;
+            }
             await Session.Locations.CompleteLocationChecksAsync(id);
             Log($"Completed Check "+name);
+            if(CurrentScene == SceneType.Game && item.Count > 0)
+            {
+                var i = item[0];
+                var wordBar = GameObject.FindAnyObjectByType<LastWordArea>();
+                wordBar.TutorialMessage($"Sent '{i.ItemDisplayName}' to {i.Player}", true, true, true);
+            }
         }
         static TextMeshProUGUI Console;
         public static bool BlockTextInput()
