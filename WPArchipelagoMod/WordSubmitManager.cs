@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 
 namespace WPArchipelagoMod
 {
@@ -36,14 +37,27 @@ namespace WPArchipelagoMod
             h.Patch(AccessTools.Method(typeof(LogicManagerScript), "FinishRound"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(CheckRound)));
             h.Patch(AccessTools.Method(typeof(LogicManagerScript), "StartFreshGame"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(NewGame)));
             h.Patch(AccessTools.Method(typeof(LogicManagerScript), "LoadGameState"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(LoadGame)));
+            h.Patch(AccessTools.Method(typeof(LogicManagerScript), nameof(LogicManagerScript.GameOver)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(OnGameOver)));
             h.Patch(AccessTools.Method(typeof(SaveData), "GetAllLogicData"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(SaveGame)));
             h.Patch(AccessTools.Method(typeof(AchievementManager), nameof(AchievementManager.UnlockAchievement)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(CheckAchievement)));
             h.Patch(AccessTools.Method(typeof(BonusStore), nameof(BonusStore.PickThreeRandomUpgrades)), prefix: new HarmonyMethod(typeof(GameplayManager), nameof(EditUpgradesAvailable)));
             h.Patch(AccessTools.Method(typeof(uAddTile), "PickTileRandomly"), prefix: new HarmonyMethod(typeof(GameplayManager), nameof(EditRandomTiles)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(RestoreRandomTiles)));
 
         }
-        public static void CheckAchievement(object[] __args)
+        public static void OnDeathLink(DeathLink d)
         {
+            if(Mod.CurrentScene != SceneType.Game) return;
+            var logic = GameObject.Find("Managers/Game Logic").GetComponent<LogicManagerScript>();
+            logic.GameOver();
+            Mod.TimeSinceDeathlink = 20;
+        }
+        public static void OnGameOver()
+        {
+            if(Mod.TimeSinceDeathlink>0) return;
+            Mod.DeathLink?.SendDeathLink(new DeathLink(Mod.Session.Players.ActivePlayer.Alias));
+        }
+        public static void CheckAchievement(object[] __args)
+        {return;
             if((long)(Mod.SlotData["Achievementsanity"]) == 0) return;
             if (AchievementIDToLocation.ContainsKey((string) __args[0]))
             {

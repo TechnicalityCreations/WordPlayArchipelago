@@ -20,6 +20,7 @@ using Archipelago.MultiClient.Net.Helpers;
 using Archipelago.MultiClient.Net.Packets;
 using UnityEngine.Playables;
 using System.Collections.Concurrent;
+using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
 namespace WPArchipelagoMod
 {
     public class NotificationUpdater : MonoBehaviour
@@ -33,6 +34,7 @@ namespace WPArchipelagoMod
             {
                 if(Mod.CurrentScene == SceneType.Game)
                 {
+                    if(Mod.TimeSinceDeathlink > 0) Mod.TimeSinceDeathlink -= Time.deltaTime;
                     if(Mod.timeLeft > 0)
                     {
                         Mod.timeLeft-= Time.deltaTime;
@@ -53,6 +55,9 @@ namespace WPArchipelagoMod
     [BepInPlugin("TechnicalityCreations.WPArchipelagoMod", "Archipelago", "0.1.0")]
     public class Mod : BaseUnityPlugin
     {
+        #nullable enable
+        internal static DeathLinkService? DeathLink;
+        #nullable disable
         internal static ArchipelagoSession Session;
         static Mod inst;
         public static void Log(object s, LogLevel level = LogLevel.Message)
@@ -355,6 +360,7 @@ namespace WPArchipelagoMod
             CommandField.text = "";
         }
         public static Dictionary<string, object> SlotData;
+        internal static float TimeSinceDeathlink;
         public static async void ConnectToMultiworld()
         {
             Log("Connecting");
@@ -398,7 +404,14 @@ namespace WPArchipelagoMod
                 MetaGameSave.Instance.LoadData();
                 TurnAPPanelIntoConsole();
                 Session.MessageLog.OnMessageReceived += AddMessageToConsole;
-
+                
+                if ((long)SlotData["deathlink"] == 1)
+                {
+                    Log("Deathlink");
+                    DeathLink = Session.CreateDeathLinkService();
+                    DeathLink.OnDeathLinkReceived += GameplayManager.OnDeathLink;
+                    DeathLink.EnableDeathLink();
+                }
                 return;
             }
         Failure:
