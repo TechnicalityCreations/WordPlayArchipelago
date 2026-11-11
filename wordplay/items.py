@@ -153,7 +153,7 @@ def create_all_items(world: WordPlayWorld) -> None:
         progPool.append(create_item_with_correct_classification(world, "Progressive Difficulty"))
     if world.options.trap_chance > 0:
         progPool.append(create_item_with_correct_classification(world, "Polyglot Trap"))
-        progPool.append(create_item_with_correct_classification(world, "Special Trap"))
+
     progPool.append(create_item_with_correct_classification(world, "Play"))
     progPool.append(create_item_with_correct_classification(world, "Refresh"))
     itempool: list[Item] = progPool

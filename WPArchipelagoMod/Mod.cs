@@ -45,10 +45,11 @@ namespace WPArchipelagoMod
                     {
                         if(Mod.Messages.TryDequeue(out var m))
                         {
-                            Mod.Notification.TutorialMessage(m, false, true, true);
+                            Mod.Notification.TutorialMessage(m, true, true, true);
                             Mod.timeLeft = 3;
                         }
                     }
+                    if(GameplayManager.QueueDL) GameplayManager.DeathLink();
                 }
             }
         }
@@ -146,6 +147,7 @@ namespace WPArchipelagoMod
             a.transform.localScale = Vector2.one * 0.75f;
             Notification = GameObject.Instantiate(a, a.transform.parent);
             Notification.transform.position = new Vector3(960, 940, 0);
+            Notification.transform.SetSiblingIndex(2);
             Notification.name = "AP Notification";
             Messages = new ConcurrentQueue<string>();
             CurrentScene = SceneType.Game;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using TMPro;
 
 namespace WPArchipelagoMod
 {
@@ -41,15 +42,50 @@ namespace WPArchipelagoMod
             h.Patch(AccessTools.Method(typeof(SaveData), "GetAllLogicData"), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(SaveGame)));
             h.Patch(AccessTools.Method(typeof(AchievementManager), nameof(AchievementManager.UnlockAchievement)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(CheckAchievement)));
             h.Patch(AccessTools.Method(typeof(BonusStore), nameof(BonusStore.PickThreeRandomUpgrades)), prefix: new HarmonyMethod(typeof(GameplayManager), nameof(EditUpgradesAvailable)));
+            h.Patch(AccessTools.Method(typeof(GameOverScreen), nameof(GameOverScreen.ChangeToGameOverScreen)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(ShowDeathScreen)));
             h.Patch(AccessTools.Method(typeof(uAddTile), "PickTileRandomly"), prefix: new HarmonyMethod(typeof(GameplayManager), nameof(EditRandomTiles)), postfix: new HarmonyMethod(typeof(GameplayManager), nameof(RestoreRandomTiles)));
 
+        }
+        public static void ShowDeathScreen()
+        {
+            if(Mod.DeathLink == null) return;
+            if(Mod.TimeSinceDeathlink <= 0)
+            {
+                var t = GameObject.Find("Canvas - Gameplay/Gameplay Elements/Win Screen/Panel/Text BG/Win Label").GetComponent<TextMeshProUGUI>();
+                t.text = "You sent a deathlink...";
+
+            }
+            
         }
         public static void OnDeathLink(DeathLink d)
         {
             if(Mod.CurrentScene != SceneType.Game) return;
+            dl = d;
+            Mod.Log("Received Deathlink");
+            QueueDL = true;
+        }
+        public static bool QueueDL = false;
+        static DeathLink dl;
+        public static void DeathLink(){
+            QueueDL = false;
+            Mod.Log("Carrying out Deathlink");
+            if(Mod.CurrentScene != SceneType.Game) return;
             var logic = GameObject.Find("Managers/Game Logic").GetComponent<LogicManagerScript>();
             logic.GameOver();
+            Mod.Log("Killed Player");
             Mod.TimeSinceDeathlink = 20;
+            var t = GameObject.Find("Canvas - Gameplay/Gameplay Elements/Win Screen/Panel/Text BG/Win Label").GetComponent<TextMeshProUGUI>();
+            if(dl == null)
+            {
+                t.text = $"You received a deathlink...";
+                return;
+            }
+            if(dl.Source == "")
+            {
+                t.text = $"You received a deathlink...";
+                return;
+            }
+            t.text = $"{dl.Source} sent a deathlink";
         }
         public static void OnGameOver()
         {
@@ -101,13 +137,14 @@ namespace WPArchipelagoMod
             {
                 case "Polyglot Trap":
                     Mod.Log("Polyglot Trap");
+                    var m = GameObject.Find("Managers/Letter Bag").GetComponent<LetterBagManager>();
                     for(int i = 0; i < 15; i++)
                     {
                         var l = PolyglotTiles[Random.Range(0, PolyglotTiles.Length-1)];
-                        var m = GameObject.Find("Managers/Letter Bag").GetComponent<LetterBagManager>();
                         var letterBag = m.LetterBag;
                         letterBag.Add(l + "S0000");
                     }
+                    m.RandomiseLetters();
                     break;
                 default:
                     break;
