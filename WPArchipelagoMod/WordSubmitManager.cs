@@ -118,17 +118,7 @@ namespace WPArchipelagoMod
             'Ꙉ',
             'Ѡ',
             'Ш',
-            'Ѫ',
-            'Ѯ',
-            'Ꙋ',
-            'ق',
-            'ج',
-            'ل',
-            'م',
-            '平',
-            '凹',
-            '下',
-            '意',
+            'Ѫ'
         };
         public static void AddTrap(string Trap)
         {
@@ -138,13 +128,14 @@ namespace WPArchipelagoMod
                 case "Polyglot Trap":
                     Mod.Log("Polyglot Trap");
                     var m = GameObject.Find("Managers/Letter Bag").GetComponent<LetterBagManager>();
-                    for(int i = 0; i < 15; i++)
+                    for(int i = 0; i < m.TotalNumberOfLetters() / 4; i++)
                     {
                         var l = PolyglotTiles[Random.Range(0, PolyglotTiles.Length-1)];
                         var letterBag = m.LetterBag;
                         letterBag.Add(l + "S0000");
                     }
-                    m.RandomiseLetters();
+                    var s = GameObject.FindAnyObjectByType<ShuffleTool>();
+                    s.ShuffleTiles();
                     break;
                 default:
                     break;
