@@ -128,7 +128,7 @@ namespace WPArchipelagoMod
                 case "Polyglot Trap":
                     Mod.Log("Polyglot Trap");
                     var m = GameObject.Find("Managers/Letter Bag").GetComponent<LetterBagManager>();
-                    for(int i = 0; i < m.TotalNumberOfLetters() / 4; i++)
+                    for(int i = 0; i < m.TotalNumberOfLetters() / 6; i++)
                     {
                         var l = PolyglotTiles[Random.Range(0, PolyglotTiles.Length-1)];
                         var letterBag = m.LetterBag;

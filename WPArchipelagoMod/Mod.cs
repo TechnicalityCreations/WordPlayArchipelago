@@ -21,6 +21,7 @@ using Archipelago.MultiClient.Net.Packets;
 using UnityEngine.Playables;
 using System.Collections.Concurrent;
 using Archipelago.MultiClient.Net.BounceFeatures.DeathLink;
+using Archipelago.MultiClient.Net.Models;
 namespace WPArchipelagoMod
 {
     public class NotificationUpdater : MonoBehaviour
@@ -191,6 +192,7 @@ namespace WPArchipelagoMod
             aPanel.name = "Archipelago Panel";
             aPanel.transform.localPosition = new Vector3(420, -540, 0);
             aPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(550, 558);
+            aPanel.AddComponent<Draggable>();
             var pTitle = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Label Area/Label/Title").GetComponent<TextMeshProUGUI>();
             pTitle.text = "Archipelago";
             Log("Created Archipelago Panel");
@@ -215,7 +217,7 @@ namespace WPArchipelagoMod
             placeHolder.color = c;
             placeHolder.text = "Server";
             hostField.placeholder = placeHolder;
-            hostField.caretColor = Color.black;
+            hostField.caretColor = UnityEngine.Color.black;
             hostField.customCaretColor = true;
             hostField.caretWidth = 2;
             hostField.onFocusSelectAll = false;
@@ -310,6 +312,32 @@ namespace WPArchipelagoMod
             if(CommandField.isFocused) return false;
             return true;
         }
+        static bool isHintToggled = false;
+        static string consoleString, hintString;
+        static Button hintButton, SendButton;
+        public static void ToggleHint()
+        {
+            isHintToggled = !isHintToggled;
+            if (isHintToggled)
+            {
+                Console.text = hintString;
+                hintButton.GetComponentInChildren<TextMeshProUGUI>().text = "Console";
+                SendButton.GetComponent<RectTransform>().localPosition = new Vector3(160000, 63, 0);
+                var hTrans = hintButton.GetComponent<RectTransform>();
+                hTrans.sizeDelta = new Vector2(450, 75);
+                hTrans.localPosition = new Vector3(275, 63, 0);
+            }
+            else
+            {
+                hintButton.GetComponentInChildren<TextMeshProUGUI>().text = "Hints";
+                Console.text = consoleString;
+                SendButton.GetComponent<RectTransform>().localPosition = new Vector3(160, 63, 0);
+                var hTrans = hintButton.GetComponent<RectTransform>();
+                hTrans.sizeDelta = new Vector2(225, 75);
+                hTrans.localPosition = new Vector3(390, 63, 0);
+                
+            }
+        }
         public static void TurnAPPanelIntoConsole()
         {
             Log("Turning AP Panel into Console");
@@ -339,17 +367,33 @@ namespace WPArchipelagoMod
             slot.name = "Text Input";
             var connect = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Options/Connect Button");
             connect.SetActive(true);
-            var button = connect.GetComponent<Button>();
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(new UnityAction(SendMessage));
-            button.interactable = true;
-            button.GetComponentInChildren<TextMeshProUGUI>().text = "Send Message/Command";
+            SendButton = connect.GetComponent<Button>();
+            SendButton.onClick.RemoveAllListeners();
+            var bTrans = SendButton.GetComponent<RectTransform>();
+            bTrans.sizeDelta = new Vector2(225, 75);
+            SendButton.interactable = true;
+            hintButton = Instantiate(SendButton, SendButton.transform.parent);
+            SendButton.onClick.AddListener(new UnityAction(SendMessage));
+            SendButton.GetComponentInChildren<TextMeshProUGUI>().text = "Send";
+            
+            hintButton.name = "Hint Button";
+            
+            hintButton.onClick.AddListener(new UnityAction(ToggleHint));
+            hintButton.GetComponentInChildren<TextMeshProUGUI>().text = "Hints";
+
             var panel = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel");
+            var title = GameObject.Find("Canvas - Main/Title Screen/Archipelago Panel/Label Area");
             stext.transform.SetParent(panel.transform, true);
-            button.transform.SetParent(panel.transform, true);
+            SendButton.transform.SetParent(panel.transform, true);
+            hintButton.transform.SetParent(panel.transform, true);
+            hintButton.transform.localPosition = new Vector3(390, 63, 0);
+            bTrans.localPosition = new Vector3(160, 63, 0);
+
             Log("Finished Creating Console");
-            panel.GetComponent<Image>().raycastTarget = text.raycastTarget = false;
+            title.GetComponent<Image>().raycastTarget = text.raycastTarget = false;
             panel.transform.SetParent(canvas.transform, true);
+            Destroy(panel.GetComponent<Draggable>());
+            panel.AddComponent<Draggable>();
             DontDestroyOnLoad(canvas);
             Log("Made Console Permanent");
             Console = text;
@@ -363,6 +407,79 @@ namespace WPArchipelagoMod
         }
         public static Dictionary<string, object> SlotData;
         internal static float TimeSinceDeathlink;
+        public static void OnHint(Hint[] hints)
+        {
+            hintString = "";
+            hints = hints.SkipWhile((h)=>h.Found).OrderBy(GetHintValue).ToArray();
+            int lines = 0;
+            foreach(var h in hints)
+            {
+                if(lines > 15) break;
+                var locationName = Session.Locations.GetLocationNameFromId(h.LocationId);
+                var gameName = Session.Players.GetPlayerInfo(h.ReceivingPlayer).Game;
+                var player = Session.Players.GetPlayerInfo(h.ReceivingPlayer).Alias;
+                var itemName = Session.Items.GetItemName(h.ItemId, gameName);
+                hintString+= $"<colour=blue>{locationName}</colour> - {player}'s {itemName}\n";
+                lines++;
+            }
+            if(isHintToggled) Console.text = hintString;
+            else Console.text = consoleString;
+            
+        }
+        public static int GetHintValue(Hint h)
+        {
+            var lid = h.LocationId;
+            var l = Session.Locations.GetLocationNameFromId(lid);
+            float locationValue = 1;
+            bool addLocValue = false;
+            if (l.Contains("Easy"))
+            {
+                locationValue = 1;
+            }
+            if (l.Contains("Normal"))
+            {
+                if(DifficultyManager.ProgDiffs > 0) locationValue = 2;
+                else locationValue = 1001;
+            }
+            if (l.Contains("Hard"))
+            {
+                if(DifficultyManager.ProgDiffs > 1) locationValue = 3;
+                else locationValue = 1002;
+            }
+            if (l.Contains("Legendary"))
+            {
+                if(DifficultyManager.ProgDiffs > 2) locationValue = 4;
+                else locationValue = 1003;
+            }
+            if (l.Contains("UsedLetter"))
+            {
+                var letter = l.Replace("UsedLetter", "");
+                if(Session.Items.AllItemsReceived.Where((i)=>i.ItemName==letter).Count()>0) locationValue = 0.1f;
+                else locationValue = 1000;
+            }
+            if (l.Contains("PointWord"))
+            {
+                var num = l.Replace("PointWord", "");
+                if(!int.TryParse(num, out int n)) return 100000;
+                locationValue = n /5f;
+                addLocValue = true;
+            }
+            if (l.Contains("LetterWord"))
+            {
+                var num = l.Replace("LetterWord", "");
+                if(!int.TryParse(num, out int n)) return 100000;
+                locationValue = n * 2;
+                addLocValue = true;
+            }
+            int itemVal =1;
+            var i = h.ItemFlags;
+            if(i== ItemFlags.Advancement) itemVal = 1;
+            if(i== ItemFlags.NeverExclude) itemVal = 3;
+            if(i== ItemFlags.None) itemVal = 5;
+            if(i== ItemFlags.Trap) itemVal = 1000;
+            if(addLocValue) return (int)locationValue + itemVal;
+            return (int)(locationValue * itemVal);
+        }
         public static async void ConnectToMultiworld()
         {
             Log("Connecting");
@@ -372,7 +489,7 @@ namespace WPArchipelagoMod
             var b = button.GetComponent<Button>();
             var bText = button.GetComponentInChildren<TextMeshProUGUI>();
             bText.text = "Connecting";
-            bText.color = Color.black;
+            bText.color = UnityEngine.Color.black;
             b.enabled = false;
             Server = GameObject.Find(apPanelPath + "Host").GetComponent<TMP_InputField>().text;
             PortNumber = GameObject.Find(apPanelPath + "Port").GetComponent<TMP_InputField>().text;
@@ -406,7 +523,7 @@ namespace WPArchipelagoMod
                 MetaGameSave.Instance.LoadData();
                 TurnAPPanelIntoConsole();
                 Session.MessageLog.OnMessageReceived += AddMessageToConsole;
-                
+                Session.Hints.TrackHints(OnHint);
                 if ((long)SlotData["deathlink"] == 1)
                 {
                     Log("Deathlink");
@@ -418,7 +535,7 @@ namespace WPArchipelagoMod
             }
         Failure:
             bText.text = "Couldn't Connect";
-            bText.color = Color.red;
+            bText.color = UnityEngine.Color.red;
             b.interactable = true;
             b.enabled = true;
             Log("Failure to Connect");
@@ -436,7 +553,9 @@ namespace WPArchipelagoMod
             }
             ConsoleLines.Add(s);
             if(ConsoleLines.Count() > 15) ConsoleLines.RemoveAt(0);
-            Console.text = string.Join("\n", ConsoleLines);
+            consoleString = string.Join("\n", ConsoleLines);
+            if(!isHintToggled) Console.text = consoleString;
+            else Console.text = hintString;
             Log(s);
         }
         static FieldInfo SaveFilePath = AccessTools.Field(typeof(MetaGameSave), "saveFilePath");

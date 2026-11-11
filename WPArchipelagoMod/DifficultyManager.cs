@@ -9,7 +9,7 @@ namespace WPArchipelagoMod
     {
         static ArchipelagoSession Session => Mod.Session;
         static GameObject Normal, Hard, Legendary;
-
+        internal static int ProgDiffs = 0;
         public static void InitialiseDifficultyOptions()
         {
             Mod.Log("Initialising Difficulty Manager");
@@ -25,11 +25,11 @@ namespace WPArchipelagoMod
             Mod.Log("Updating Difficulty Buttons");
             var Items = Session.Items.AllItemsReceived;
             var progDiff = from i in Items where i.ItemName == "Progressive Difficulty" select i;
-            var progressiveDifficultyCount = progDiff.Count();
-            Mod.Log($"Prog Difficulties: {progressiveDifficultyCount}");
-            Normal.SetActive(progressiveDifficultyCount >0);
-            Hard.SetActive(progressiveDifficultyCount >1);
-            Legendary.SetActive(progressiveDifficultyCount >2);
+            ProgDiffs = progDiff.Count();
+            Mod.Log($"Prog Difficulties: {ProgDiffs}");
+            Normal.SetActive(ProgDiffs >0);
+            Hard.SetActive(ProgDiffs >1);
+            Legendary.SetActive(ProgDiffs >2);
             Mod.Log("Updated Difficulty Buttons");
         }
         static void ModifyDifficultySelectUI()
