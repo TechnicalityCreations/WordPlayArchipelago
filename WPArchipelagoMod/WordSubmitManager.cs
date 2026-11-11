@@ -134,8 +134,8 @@ namespace WPArchipelagoMod
                         var letterBag = m.LetterBag;
                         letterBag.Add(l + "S0000");
                     }
-                    var s = GameObject.FindAnyObjectByType<ShuffleTool>();
-                    s.ShuffleTiles();
+                    var r = GameObject.FindAnyObjectByType<RefreshTool>();
+                    r.RefreshAllTiles(true, false);
                     break;
                 default:
                     break;
